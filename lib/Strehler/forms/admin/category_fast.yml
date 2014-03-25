@@ -1,0 +1,25 @@
+elements:
+    - name: category
+      label: Category
+      constraints:
+        - type: Required
+          message: 'Category needed<br />'
+        - type: Regex
+          regex: '^[^\/]*$'
+          message: 'Invalid character'
+      validators:
+        - type: '+Strehler::FormFu::Validator::CategoryUnique'
+          message: 'Category already exists'
+    - type: Select
+      id: category_selector
+      name: parent
+      label: Parent category
+    - type: Block
+      name: save
+      tag: button
+      content: New category (fast)
+      attributes:
+        type: submit
+        class: btn btn-primary
+
+   

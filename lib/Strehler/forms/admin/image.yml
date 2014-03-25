@@ -1,0 +1,29 @@
+attributes:
+    class: well 
+elements:
+    - type: File
+      name: photo
+      label: Image
+      attributes: 
+        class: span5
+    - type: Select
+      id: category_selector
+      name: category
+      label: Category
+    - type: Select
+      name: subcategory
+      label: Subcategory
+      id: subcat
+    - type: Block
+      tag: div
+      id: tags-place
+      attributes:
+        class: text label
+    - name: save
+      type: Block
+      tag: button
+      content: Submit
+      attributes:
+        type: submit
+        class: btn btn-primary
+  

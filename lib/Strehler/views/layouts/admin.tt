@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=[% settings.charset %]" />
+<title>Admin</title>
+<link rel="stylesheet" href="[% request.uri_base %]/strehler/bootstrap/css/bootstrap.min.css" />
+<link rel="stylesheet" href="[% request.uri_base %]/strehler/bootstrap/datepicker/css/datepicker.css" />
+<link rel="stylesheet" href="[% request.uri_base %]/strehler/css/admin.css" />
+<script src="[% request.uri_base %]/strehler/js/jquery.js"></script>
+<script src="[% request.uri_base %]/strehler/bootstrap/js/bootstrap.min.js"></script>
+<script src="[% request.uri_base %]/strehler/bootstrap/datepicker/js/bootstrap-datepicker.js"></script>
+<script src="[% request.uri_base %]/strehler/js/strehler.js"></script>
+
+</head>
+<body>
+<div class="navbar">
+  <div class="navbar-inner">
+    <ul class="nav">
+      [% IF user %]
+      <li class="dropdown user"><a href="#" class="dropdown-toggle user-toggle" data-toggle="dropdown"><b class="icon-user"></b>  [% user %]<b class="caret"></b></a>
+        <ul class="dropdown-menu">
+            <li><a href="/admin/logout">Logout</a></li>
+        </ul>
+      </li>
+      [% END %]
+      <li class="[% navbar.home %]"><a href="/admin">Home</a></li>
+      <li class="[% navbar.image %]"><a href="/admin/image">Images</a></li>
+      <li class="[% navbar.article %]"><a href="/admin/article">Articles</a></li>
+      [% FOREACH k in extramenu.keys %]
+          [% menuname = extramenu.$k.label %]
+          [% menulink = k %]
+          <li class="[% navbar.${menulink} %]"><a href="/admin/[% menulink %]">[% menuname %]</a></li>
+      [% END %]
+      [% IF role == 'admin' %]
+      <li class="[% navbar.category %] first-admin"><a href="/admin/category">Categories</a></li>
+      <li class="[% navbar.user %]"><a href="/admin/user">Users</a></li>
+      <li class="[% navbar.log %]"><a href="/admin/log">Logs</a></li>
+      [% END %]
+    </ul>
+
+  </div>
+</div>
+[% content %]
+<div id="footer" class="span10">
+    <p class="span3 offset9">
+    Powered by <a href="http://perldancer.org/">Dancer2</a> [% dancer_version %]
+    </p>
+</div>
+</body>
+</html>

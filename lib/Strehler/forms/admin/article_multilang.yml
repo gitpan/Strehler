@@ -1,0 +1,10 @@
+elements:
+    - name: title
+      label: Title
+      attributes: 
+        class: span8
+    - name: text
+      label: Text
+      type: Textarea
+      attributes: 
+        class: span8

@@ -1,0 +1,78 @@
+.navbar .navbar-inner .nav .user
+{
+    border-right: 2px solid;
+}
+.navbar .navbar-inner .nav .first-admin
+{
+    border-left: 2px solid;
+}
+.navbar .navbar-inner .nav .user .user-toggle
+{
+    color: #ed0000;
+}
+.homepage p
+{
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+.error_message
+{
+    font-size: 1.6em;
+    padding: 10px;
+    color: #FFE303;
+}
+.divider
+{
+    height: 10px;
+}
+.grey
+{
+    background: #D3D3D3;
+}
+.inlist-icon
+{
+    margin-top: 4px;
+    margin-left: 12px;
+}
+.articlelist .thumbnail img
+{
+    height: 80px;
+}
+.articlelist .row
+{
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.articlelist .elementID
+{
+    font-size:30px;
+    padding-top: 20px;
+}
+.article .label
+{
+    margin-bottom: 10px;
+}
+#tags-place
+{
+    margin-bottom: 7px;
+    font-size: 14px;
+}
+#tags-place span
+{
+    margin-left: 6px;
+    margin-right: 6px;
+}
+
+#footer
+{
+    margin-top: 30px;
+}
+.parent_category
+{
+    background: #eee;
+}
+.table .sub_category
+{
+    padding-left: 40px;
+}
+
