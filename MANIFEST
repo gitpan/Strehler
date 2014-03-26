@@ -29,7 +29,7 @@ lib/Strehler/Schema/Result/Description.pm
 lib/Strehler/Schema/Result/Image.pm
 lib/Strehler/Schema/Result/Tag.pm
 lib/Strehler/Schema/Result/User.pm
-lib/Strehler/demo/Demo.pm
+lib/Strehler/demo/Demo.pm.ex
 lib/Strehler/demo/app.pl
 lib/Strehler/demo/config.yml
 lib/Strehler/demo/strehler-home.tt
