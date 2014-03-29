@@ -4,7 +4,7 @@ use Dancer2 0.11;
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::Ajax;
 use Strehler::Dancer2::Plugin;
-use HTML::FormFu;
+use HTML::FormFu 1.00;
 use HTML::FormFu::Element::Block;
 use Authen::Passphrase::BlowfishCrypt;
 use Strehler::Helpers; 
@@ -45,8 +45,7 @@ get '/' => sub {
 ##### Login/Logout #####
 
 any '/login' => sub {
-    my $form = HTML::FormFu->new;
-    $form->load_config_file( $form_path . '/admin/login.yml' );
+    my $form = form_login();
     my $params_hashref = params;
     $form->process($params_hashref);
     my $message;
@@ -99,7 +98,6 @@ any '/image/add' => sub
         Strehler::Element::Log->write(session->read('user'), 'add', 'image', $id);
         redirect dancer_app->prefix . '/image/edit/' . $id;
     }
-    $form = bootstrap_divider($form);
     template "admin/image", { form => $form->render() }
 };
 
@@ -109,7 +107,6 @@ get '/image/edit/:id' => sub {
     my $form_data = $image->get_form_data();
     my $form = form_image('edit', $form_data->{'category'});
     $form->default_values($form_data);
-    $form = bootstrap_divider($form);
     template "admin/image", { id => $id, form => $form->render(), img_source => $image->get_attr('image') }
 };
 
@@ -129,7 +126,6 @@ post '/image/edit/:id' => sub
         redirect dancer_app->prefix . '/image/list';
     }
     my $img = Strehler::Element::Image->new($id);
-    $form = bootstrap_divider($form);
     template "admin/image", { form => $form->render(),img_source => $img->get_attr('image') }
 };
 
@@ -210,7 +206,6 @@ any '/user/add' => sub
             redirect dancer_app->prefix . '/user/list';
         }
     }
-    $form = bootstrap_divider($form);
     template "admin/user", { form => $form->render(), message => $message }
 };
 
@@ -277,13 +272,10 @@ any '/category/list' => sub
     }
     #THE TABLE
     my $to_view = Strehler::Meta::Category->get_list();
+    my @entities = Strehler::Helpers::get_categorized_entities();
 
     #THE FORM
-    my $form = HTML::FormFu->new;
-    my @entities = Strehler::Helpers::get_categorized_entities();
-    $form->load_config_file( $form_path . '/admin/category_fast.yml' );
-    my $parent = $form->get_element({ name => 'parent'});
-    $parent->options(Strehler::Meta::Category->make_select());
+    my $form = form_category_fast();
     my $params_hashref = params;
     $form->process($params_hashref);
     if($form->submitted_and_valid)
@@ -312,7 +304,6 @@ any '/category/add' => sub
         Strehler::Element::Log->write(session->read('user'), 'add', 'category', $id);
         redirect dancer_app->prefix . '/category/list'; 
     }
-    $form = bootstrap_divider($form);
     template "admin/category", { form => $form->render() }
 };
 get '/category/edit/:id' => sub {
@@ -327,7 +318,6 @@ get '/category/edit/:id' => sub {
     my $form_data = $category->get_form_data(\@entities);
     my $form = form_category();
     $form->default_values($form_data);
-    $form = bootstrap_divider($form);
     template "admin/category", { form => $form->render() }
 };
 post '/category/edit/:id' => sub
@@ -421,14 +411,22 @@ ajax '/category/tagform/:type/:id?' => sub
 {
     if(params->{id})
     {
-        my @tags = Strehler::Meta::Tag->get_configured_tags_for_template(params->{id}, params->{type});
-        if($#tags > -1)
+        my $category = Strehler::Meta::Category->new(params->{id});
+        if(! $category->exists())
         {
-           template 'admin/configured_tags', { tags => \@tags }, { layout => undef };
+            template 'admin/open_tags';
         }
         else
         {
-            template 'admin/open_tags';
+            my @tags = Strehler::Meta::Tag->get_configured_tags_for_template($category->ext_name(), params->{type});
+            if($#tags > -1)
+            {
+                template 'admin/configured_tags', { tags => \@tags }, { layout => undef };
+            }
+            else
+            {
+                template 'admin/open_tags';
+            }
         }
     }
     else
@@ -625,7 +623,7 @@ ajax '/:entity/tagform/:id?' => sub
     {
         eval "require $class";
         my $obj = $class->new(params->{id});
-        my @category_tags = Strehler::Meta::Tag->get_configured_tags_for_template($obj->get_attr('category'), $entity);
+        my @category_tags = Strehler::Meta::Tag->get_configured_tags_for_template($obj->get_attr('category-name'), $entity);
         my @tags = split(',', $obj->get_tags());
         my @out;
         if($#category_tags > -1)
@@ -698,7 +696,6 @@ any '/:entity/add' => sub
         redirect dancer_app->prefix . '/' . $entity . '/list';
     }
     my $fake_tags = $form->get_element({ name => 'tags'});
-    Strehler::Admin::bootstrap_divider($form);
     $form->remove_element($fake_tags) if($fake_tags);
     template "admin/generic_add", { entity => $entity, label => $label, form => $form->render() }
 };
@@ -724,7 +721,6 @@ get '/:entity/edit/:id' => sub {
         return pass;
     }
     $form->default_values($form_data);
-    $form = Strehler::Admin::bootstrap_divider($form);
     template "admin/generic_add", {  entity => $entity, label => $label, id => $id, form => $form->render() }
 };
 post '/:entity/edit/:id' => sub
@@ -760,13 +756,22 @@ post '/:entity/edit/:id' => sub
 };
 
 ##### Helpers #####
-# They only manipulate forms rendering and manage login
+# They only manipulate form rendering and ACL
+
+sub form_login
+{
+    my $form = HTML::FormFu->new;
+    $form->auto_error_class('error-msg');
+    $form->load_config_file( $form_path . '/admin/login.yml' );
+    return $form;    
+}
 
 sub form_image
 {
     my $action = shift;
     my $has_sub = shift;
     my $form = HTML::FormFu->new;
+    $form->auto_error_class('error-msg');
     $form->load_config_file( $form_path . '/admin/image.yml' );
     $form = add_multilang_fields($form, \@languages, $form_path . '/admin/image_multilang.yml'); 
     $form->constraint({ name => 'photo', type => 'Required' }) if $action eq 'add';
@@ -781,6 +786,7 @@ sub form_article
 {
     my $has_sub = shift;
     my $form = HTML::FormFu->new;
+    $form->auto_error_class('error-msg');
     $form->load_config_file( $form_path . '/admin/article.yml' );
     $form = add_multilang_fields($form, \@languages, $form_path . '/admin/article_multilang.yml'); 
     my $default_language = config->{Strehler}->{default_language};
@@ -797,6 +803,7 @@ sub form_article
 sub form_category
 {
     my $form = HTML::FormFu->new;
+    $form->auto_error_class('error-msg');
     $form->load_config_file( $form_path . '/admin/category.yml' );
     my $category = $form->get_element({ name => 'parent'});
     $category->options(Strehler::Meta::Category->make_select());
@@ -804,10 +811,21 @@ sub form_category
     return $form;
 }
 
+sub form_category_fast
+{
+    my $form = HTML::FormFu->new;
+    $form->auto_error_class('error-msg');
+    $form->load_config_file( $form_path . '/admin/category_fast.yml' );
+    my $parent = $form->get_element({ name => 'parent'});
+    $parent->options(Strehler::Meta::Category->make_select());
+    return $form;
+}
+
 sub form_user
 {
     my $action = shift;
     my $form = HTML::FormFu->new;
+    $form->auto_error_class('error-msg');
     $form->load_config_file( $form_path . '/admin/user.yml' );
     if($action eq 'add')
     {
@@ -829,6 +847,7 @@ sub form_generic
     }
 
     my $form = HTML::FormFu->new;
+    $form->auto_error_class('error-msg');
     $form->load_config_file( $conf );
     if($multilang_conf)
     {
@@ -869,20 +888,6 @@ sub tags_for_form
     { 
         my $subcategory = $form->get_element({ name => 'subcategory'});
         $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $subcategory);
-    }
-    return $form;
-}
-
-sub bootstrap_divider
-{
-    my $form = shift;
-    my $elements = $form->get_elements();
-    my $divider = HTML::FormFu::Element::Block->new({ type => 'Block', tag => 'div', content => '&nbsp;' });
-    $divider->add_attributes({class => 'divider'});
-    foreach(@{$elements})
-    {
-        my $el = $_;
-        $form->insert_after($divider->clone(), $el);
     }
     return $form;
 }
@@ -967,6 +972,41 @@ sub check_role
     }
 }
 
+=encoding utf8
+
+=head1 NAME
+
+Strehler::Admin - App holding the routes used by Strehler backend
+
+=head1 DESCRIPTION
+
+Strehler::Admin holds all the routes used by Strehler to erogate views. It also contains some helpers, mostly about form management, called inside routes.
+
+The use of the L<Strehler::Dancer2::Plugin> makes all the routes to have /admin as prefix.
+
+Routes have the structure:
+
+    /entity/action/id
+
+Where  B<entity> represent a L<Strehler::Element> class, action is usually a standard action of a CRUD interface and id (where needed) is the identifier of the object cosidered.
+
+=head1 SYNOPSIS
+
+Strehler::Admin is just a Dancer2 app so you need to add it to your bin/app.pl script to use it.
+
+    #!/usr/bin/env perl
+
+    use FindBin;
+    use lib "$FindBin::Bin/../lib";
+
+    use Site;
+    use Strehler::Admin;
+
+    Site->dance;
+
+Never add the C<use Strehler::Admin> line as the first App included to not mess with site directories (public, lib...)
+
+=cut
 
 
 1;

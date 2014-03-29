@@ -37,7 +37,7 @@ my %WriteMakefileArgs = (
     "DateTime::Format::Strptime" => 0,
     "File::Copy" => 0,
     "File::Copy::Recursive" => 0,
-    "HTML::FormFu" => 0,
+    "HTML::FormFu" => "1.00",
     "HTML::FormFu::Element::Block" => 0,
     "HTML::FormFu::Element::Select" => 0,
     "HTML::FormFu::Validator" => 0,
@@ -50,14 +50,12 @@ my %WriteMakefileArgs = (
     "YAML::XS" => 0
   },
   "TEST_REQUIRES" => {
-    "File::Slurp" => 0,
     "FindBin" => 0,
     "LWP::UserAgent" => 0,
     "Test::More" => 0,
-    "Test::TCP" => 0,
-    "lib" => 0
+    "Test::TCP" => 0
   },
-  "VERSION" => "1.1.1",
+  "VERSION" => "1.1.2",
   "test" => {
     "TESTS" => "t/*.t"
   }

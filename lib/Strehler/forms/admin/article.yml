@@ -13,18 +13,14 @@ elements:
       label: Category
       constraints:
         type: Required
-        message: 'Category needed<br />'
+        message: 'Category needed'
     - type: Select
       name: subcategory
       label: Sub-category
       id: subcat
-    - type: Fieldset
-      elements:
-        - type: Block
-          tag: div
-          id: tags-place
-          attributes:
-            class: text label
+    - type: Block
+      tag: div
+      id: tags-place
     - type: Fieldset
       elements: 
           - name: display_order
@@ -38,6 +34,8 @@ elements:
             attributes:
               type: button
               class: btn btn-warning
+      attributes:
+        class: order-widget
     - id: date_of_pub
       name: publish_date
       label: Date

@@ -10,6 +10,9 @@ elements:
       id: category_selector
       name: category
       label: Category
+      constraints:
+        type: Required
+        message: 'Category needed'
     - type: Select
       name: subcategory
       label: Subcategory
@@ -17,8 +20,6 @@ elements:
     - type: Block
       tag: div
       id: tags-place
-      attributes:
-        class: text label
     - name: save
       type: Block
       tag: button
