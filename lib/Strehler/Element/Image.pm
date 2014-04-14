@@ -34,6 +34,25 @@ sub main_title
         return "*** no title ***";
     }
 }
+sub fields_list
+{
+    my $self = shift;
+    my @fields = ( { 'id' => 'id',
+                     'label' => 'ID',
+                     'ordinable' => 1 },
+                   { 'id' => 'descriptions.title',
+                     'label' => 'Title',
+                     'ordinable' => 1 },
+                   { 'id' => 'category',
+                       'label' => 'Category',
+                       'ordinable' => 0 },
+                   { 'id' => 'Preview',
+                       'label' => 'Preview',
+                       'ordinable' => 0 }
+               );
+    return \@fields;
+    
+}
 
 #Save form redefined to manage image upload
 sub save_form
@@ -91,6 +110,15 @@ sub save_form
     }
     Strehler::Meta::Tag->save_tags($form->param_value('tags'), $img_row->id, 'image');
     return $img_row->id;     
+}
+sub search_box
+{
+    my $self = shift;
+    my $string = shift;
+    my $parameters = shift;
+    $parameters->{'search'} = { 'descriptions.title' => { 'like', "%$string%" } };
+    $parameters->{'join'} = 'descriptions';
+    return $self->get_list($parameters);
 }
 
 =encoding utf8

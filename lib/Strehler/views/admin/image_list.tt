@@ -3,17 +3,10 @@
     <h1>[% label %]</h1>
 </div>
 <div class="content articlelist span12">
-        [% INCLUDE categoryfilter %]
+        [% INCLUDE tools %]
         [% INCLUDE pager %]
         <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Preview</th>
-            </tr>
-        </thead>
+        [% INCLUDE listhead %]
         <tbody>
             [% FOREACH el IN elements %]
             <tr>

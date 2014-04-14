@@ -5,6 +5,8 @@ use Dancer2 0.11;
 use Dancer2::Plugin::DBIC;
 use Strehler::Meta::Tag;
 use Strehler::Meta::Category;
+use Strehler::Helpers;
+use Data::Dumper;
 
 has row => (
     is => 'ro',
@@ -64,15 +66,7 @@ sub publishable
 {
     my $self = shift;
     my $item = $self->metaclass_data('item_type');
-    return 1 if($item eq 'article');
-    if(config->{'Strehler'}->{'extra_menu'}->{$item}->{'publishable'})
-    {
-        return config->{'Strehler'}->{'extra_menu'}->{$item}->{'publishable'};
-    }
-    else
-    {
-        return 0;
-    }
+    return Strehler::Helpers::get_entity_attr($item, 'publishable');
 }
 sub exists
 {
@@ -302,6 +296,66 @@ sub main_title
     {
         return "[". $self->get_attr('id') . "]";
     }
+}
+sub fields_list
+{
+    my $self = shift;
+    my $item = $self->metaclass_data('item_type');
+    my %attributes = Strehler::Helpers::get_entity_data($item);
+    my $resultset = $self->get_schema()->resultset($self->ORMObj());
+    my $title_id = $self->default_field();
+    my $title_label = $title_id ? ucfirst($title_id) : 'Title';
+    my $title_ordinable = $title_id ? 1 : 0;
+    my @fields = ( { 'id' => 'id',
+                     'label' => 'ID',
+                     'ordinable' => 1 },
+                   { 'id' => $title_id,
+                     'label' => $title_label,
+                     'ordinable' => $title_ordinable } );
+    if($attributes{'categorized'})
+    {
+        push @fields, { 'id' => 'category',
+                       'label' => 'Category',
+                       'ordinable' => 0 };
+    }
+    if($attributes{'ordered'})
+    {
+        push @fields, { 'id' => 'display_order',
+                       'label' => 'Order',
+                       'ordinable' => 1 };
+    }
+    if($attributes{'dated'})
+    {
+        push @fields, { 'id' => 'publish_date',
+                       'label' => 'Date',
+                       'ordinable' => 1 };
+    }
+    if($attributes{'publishable'})
+    {
+        push @fields, { 'id' => 'published',
+                       'label' => 'Status',
+                       'ordinable' => 1 };
+    }
+    return \@fields;
+    
+}
+sub default_field
+{
+    my $self = shift;
+    my $resultset = $self->get_schema()->resultset($self->ORMObj());
+    if($resultset->result_source->has_column('title'))
+    {
+        return 'title';
+    }
+    elsif($resultset->result_source->has_column('name'))
+    {
+        return 'name';
+    }
+    else
+    {
+        return undef;
+    }
+
 }
 sub publish
 {
@@ -546,9 +600,20 @@ sub get_list
     $args{'entries_per_page'} ||= 20;
     $args{'page'} ||= 1;
     $args{'language'} ||= config->{Strehler}->{default_language};
-
+    $args{'join'} ||= [];
+    $args{'join'} = [ $args{'join'} ] if(! ref($args{'join'}));
     my $no_paging = 0;
     my $default_page = 1;
+    my $search_criteria = $args{'search'} || undef;
+
+    if($args{'order_by'} =~ /^(.*?)\.(.*?)$/)
+    {
+        my $order_join = $1;
+        push @{$args{'join'}}, $order_join;
+    }
+    my %seen = ();
+    my @joins = grep { ! $seen{ $_ }++ } @{$args{'join'}};
+    $args{'join'} = \@joins;
     if($args{'entries_per_page'} == -1)
     {
         $args{'entries_per_page'} = undef;
@@ -556,7 +621,6 @@ sub get_list
         $no_paging = 1;
     }
 
-    my $search_criteria = undef;
     if($self->publishable())
     {
         if(exists $args{'published'})
@@ -569,6 +633,7 @@ sub get_list
         my $ids = $self->get_schema()->resultset('Tag')->search({tag => $args{'tag'}, item_type => $self->item_type()})->get_column('item_id');
         $search_criteria->{'id'} = { -in => $ids->as_query };
     }
+    my $search_rules = { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'}, join => $args{'join'} };
 
     my $rs;
     if(exists $args{'category_id'} && $args{'category_id'})
@@ -579,7 +644,7 @@ sub get_list
             return {'to_view' => [], 'last_page' => 1 };
         }
         my $category_access = $self->category_accessor($category);
-        $rs = $category->$category_access->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'} });
+        $rs = $category->$category_access->search($search_criteria, $search_rules);
     }
     elsif(exists $args{'category'} && $args{'category'})
     {
@@ -594,12 +659,17 @@ sub get_list
             $category = $category_obj->row;
         }
         my $category_access = $self->category_accessor($category);
-        $rs = $category->$category_access->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'} });
+        $rs = $category->$category_access->search($search_criteria, $search_rules);
     }
     else
     {
-        $rs = $self->get_schema()->resultset($self->ORMObj())->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'}});
+        $rs = $self->get_schema()->resultset($self->ORMObj())->search($search_criteria, $search_rules);
     }
+    if(grep {$_ eq $self->multilang_children()} @{$args{'join'}})
+    {
+        $rs = $rs->search({$self->multilang_children() . '.language' => $args{'language'}});
+    }
+ 
     my $elements;
     my $last_page;
     if($no_paging)
@@ -629,6 +699,15 @@ sub get_list
         push @to_view, \%el;
     }
     return {'to_view' => \@to_view, 'last_page' => $last_page};
+}
+
+sub search_box
+{
+    my $self = shift;
+    my $string = shift;
+    my $parameters = shift;
+    $parameters->{'search'} = { $self->default_field() => { 'like', "%$string%" } };
+    return $self->get_list($parameters);
 }
 
 sub make_select

@@ -36,6 +36,40 @@ sub main_title
     }
 
 }
+sub fields_list
+{
+    my $self = shift;
+    my @fields = ( { 'id' => 'id',
+                     'label' => 'ID',
+                     'ordinable' => 1 },
+                   { 'id' => 'contents.title',
+                     'label' => 'Title',
+                     'ordinable' => 1 },
+                   { 'id' => 'category',
+                       'label' => 'Category',
+                       'ordinable' => 0 },
+                   { 'id' => 'display_order',
+                     'label' => 'Order',
+                     'ordinable' => 1 },
+                   { 'id' => 'publish_date',
+                     'label' => 'Date',
+                     'ordinable' => 1 },
+                   { 'id' => 'published',
+                     'label' => 'Status',
+                     'ordinable' => 1 }
+                );
+    return \@fields;
+}
+sub search_box
+{
+    my $self = shift;
+    my $string = shift;
+    my $parameters = shift;
+    $parameters->{'search'} = { 'contents.title' => { 'like', "%$string%" } };
+    $parameters->{'join'} = 'contents';
+    return $self->get_list($parameters);
+}
+
 
 #Ad hoc accessors and hooks
 sub image
@@ -57,7 +91,14 @@ sub save_slug
     my $id = shift;
     my $form = shift;
     my $lan = shift;
-    return $id . '-' . Strehler::Helpers::slugify($form->param_value('title_' . $lan));
+    if($form->param_value('title_' . $lan))
+    {
+        return $id . '-' . Strehler::Helpers::slugify($form->param_value('title_' . $lan));
+    }
+    else
+    {
+        return undef;
+    }
 }
 
 #Method to manage slugs

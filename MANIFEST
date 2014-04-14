@@ -1,4 +1,4 @@
-CHANGELOG.md
+Changes
 LICENSE
 MANIFEST
 META.yml
@@ -57,6 +57,7 @@ lib/Strehler/public/strehler/bootstrap/js/bootstrap.js
 lib/Strehler/public/strehler/bootstrap/js/bootstrap.min.js
 lib/Strehler/public/strehler/css/admin.css
 lib/Strehler/public/strehler/images/no-image.png
+lib/Strehler/public/strehler/js/jquery-ui-1.10.3.custom.min.js
 lib/Strehler/public/strehler/js/jquery.js
 lib/Strehler/public/strehler/js/strehler.js
 lib/Strehler/views/admin/article.tt
