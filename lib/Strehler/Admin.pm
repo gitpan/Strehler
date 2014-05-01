@@ -387,7 +387,8 @@ post '/category/delete/:id' => sub
 ajax '/category/select/:id' => sub
 {
     my $id = params->{id};
-    my $data = Strehler::Meta::Category->make_select($id);
+    my $option = params->{option} || undef;
+    my $data = Strehler::Meta::Category->make_select($id, $option);
     if($data->[1])
     {
         template 'admin/category_select', { categories => $data }, { layout => undef };
@@ -476,6 +477,7 @@ any '/:entity/list' => sub
     my $order = exists params->{'order'} ? params->{'order'} : session $entity . '-order';
     my $order_by = exists params->{'order-by'} ? params->{'order-by'} : session $entity . '-order-by';
     my $search = exists params->{'search'} ? params->{'search'} : session $entity . '-search';
+    my $ancestor = exists params->{'ancestor'} ? params->{'ancestor'} : session $entity . '-ancestor';
     my $wanted_cat = undef;
     if(exists params->{'catname'})
     {
@@ -503,13 +505,23 @@ any '/:entity/list' => sub
             $cat = $wanted_cat->row->id;
         }
     }
+    if(exists params->{'cat_name'} || exists params->{'cat'})
+    {
+        $ancestor = undef;
+    }
+    elsif(exists params->{'ancestor'})
+    {
+        $cat_param = undef;
+        $cat = $ancestor;
+        $subcat = '*';
+    }
     $page ||= 1;
     $order ||= 'desc';
     $order_by ||= 'id';
     my $entries_per_page = 20;
     my $class = $entity_data{'class'};
     eval "require $class";
-    my $search_parameters = { page => $page, entries_per_page => $entries_per_page, category_id => $cat_param, order => $order, order_by => $order_by};
+    my $search_parameters = { page => $page, entries_per_page => $entries_per_page, category_id => $cat_param, ancestor => $ancestor, order => $order, order_by => $order_by};
     my $elements;
     if($search)
     {
@@ -524,6 +536,7 @@ any '/:entity/list' => sub
     session $entity . '-order' => $order;
     session $entity . '-order-by' => $order_by;
     session $entity . '-search' => $search;
+    session $entity . '-ancestor' => $search;
     template $custom_list_view, { (entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, search => $search, order => $order, order_by => $order_by, fields => $class->fields_list(), last_page => $elements->{'last_page'}), %entity_data };
 };
 get '/:entity/turnon/:id' => sub

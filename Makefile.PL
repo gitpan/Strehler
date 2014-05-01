@@ -30,6 +30,8 @@ my %WriteMakefileArgs = (
     "DBIx::Class::Schema::Loader" => 0,
     "DBIx::Class::TimeStamp" => 0,
     "Dancer2" => "0.11",
+    "Dancer2::Core::App" => 0,
+    "Dancer2::Core::Runner" => 0,
     "Dancer2::Plugin" => 0,
     "Dancer2::Plugin::Ajax" => 0,
     "Dancer2::Plugin::DBIC" => 0,
@@ -55,7 +57,7 @@ my %WriteMakefileArgs = (
     "Test::More" => 0,
     "Test::TCP" => 0
   },
-  "VERSION" => "1.1.6",
+  "VERSION" => "1.1.7",
   "test" => {
     "TESTS" => "t/*.t"
   }

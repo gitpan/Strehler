@@ -25,6 +25,8 @@ requires:
   DBIx::Class::Schema::Loader: 0
   DBIx::Class::TimeStamp: 0
   Dancer2: 0.11
+  Dancer2::Core::App: 0
+  Dancer2::Core::Runner: 0
   Dancer2::Plugin: 0
   Dancer2::Plugin::Ajax: 0
   Dancer2::Plugin::DBIC: 0
@@ -43,4 +45,4 @@ requires:
   Text::Unidecode: 0
   Unicode::Normalize: 0
   YAML::XS: 0
-version: 1.1.6
+version: 1.1.7
