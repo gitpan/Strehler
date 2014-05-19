@@ -1,12 +1,12 @@
 use utf8;
-package TestDB::Result::Robot;
+package TestDB::Result::Dummy;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-TestDB::Result::Robot
+TestDB::Result::Dummy
 
 =cut
 
@@ -27,11 +27,11 @@ use base 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<ROBOTS>
+=head1 TABLE: C<DUMMY>
 
 =cut
 
-__PACKAGE__->table("ROBOTS");
+__PACKAGE__->table("DUMMY");
 
 =head1 ACCESSORS
 
@@ -41,63 +41,48 @@ __PACKAGE__->table("ROBOTS");
   is_auto_increment: 1
   is_nullable: 0
 
-=head2 name
+=head2 text
 
   data_type: 'varchar'
   is_nullable: 1
   size: 50
-
-=head2 pilot
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 50
-
-=head2 strenght
-
-  data_type: 'integer'
-  is_nullable: 1
-
-=head2 speed
-
-  data_type: 'integer'
-  is_nullable: 1
-
-=head2 defence
-
-  data_type: 'integer'
-  is_nullable: 1
 
 =head2 category
 
   data_type: 'integer'
-  is_foreign_key: 1
+  is_nullable: 1
+
+=head2 display_order
+
+  data_type: 'integer'
+  is_nullable: 1
+
+=head2 publish_date
+
+  data_type: 'date'
   is_nullable: 1
 
 =head2 published
 
   data_type: 'tinyint'
   is_nullable: 1
+  size: 1
 
 =cut
 
 __PACKAGE__->add_columns(
   "id",
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
-  "name",
+  "text",
   { data_type => "varchar", is_nullable => 1, size => 50 },
-  "pilot",
-  { data_type => "varchar", is_nullable => 1, size => 50 },
-  "strenght",
-  { data_type => "integer", is_nullable => 1 },
-  "speed",
-  { data_type => "integer", is_nullable => 1 },
-  "defence",
-  { data_type => "integer", is_nullable => 1 },
   "category",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  { data_type => "integer", is_nullable => 1 },
+  "display_order",
+  { data_type => "integer", is_nullable => 1 },
+  "publish_date",
+  { data_type => "date", is_nullable => 1 },
   "published",
-  { data_type => "tinyint", is_nullable => 1 },
+  { data_type => "tinyint", is_nullable => 1, size => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -112,15 +97,12 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
-=head1 RELATIONS
 
-=head2 category
+# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-05-16 00:56:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:lv/Bxl+Kt6PxXBFiJ7+Kig
 
-Type: belongs_to
 
-Related object: L<TestDB::Result::Category>
-
-=cut
+# You can replace this text with custom code or comments, and it will be preserved on regeneration
 
 __PACKAGE__->belongs_to(
   "category",
@@ -134,25 +116,4 @@ __PACKAGE__->belongs_to(
   },
 );
 
-=head2 robots_multis
-
-Type: has_many
-
-Related object: L<TestDB::Result::RobotsMulti>
-
-=cut
-
-__PACKAGE__->has_many(
-  "robots_multis",
-  "TestDB::Result::RobotsMulti",
-  { "foreign.robot" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-02-01 23:28:47
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:B/1cebMDj/JAR8GFExE+Zg
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

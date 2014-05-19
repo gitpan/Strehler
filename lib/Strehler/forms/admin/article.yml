@@ -7,45 +7,10 @@ elements:
       attributes: 
         id: image_selector
         class: span8
-    - type: Select
-      id: category_selector
-      name: category
-      label: Category
-      constraints:
-        type: Required
-        message: 'Category needed'
-    - type: Select
-      name: subcategory
-      label: Sub-category
-      id: subcat
-    - type: Block
-      tag: div
-      id: tags-place
-    - type: Fieldset
-      elements: 
-          - name: display_order
-            id: order
-            label: Order
-          - type: Block
-            id: last
-            name: last
-            tag: button
-            content: Next!
-            attributes:
-              type: button
-              class: btn btn-warning
-      attributes:
-        class: order-widget
-    - id: date_of_pub
-      name: publish_date
-      label: Date
-      inflators:
-         - type: DateTime
-           parser:
-              strptime: "%d/%m/%Y"
-      deflator:
-         - type: Strftime
-           strftime: "%d/%m/%Y"
+    - type: "+Strehler::FormFu::Element::Category"
+    - type: "+Strehler::FormFu::Element::Tags"
+    - type: "+Strehler::FormFu::Element::DisplayOrder"
+    - type: "+Strehler::FormFu::Element::PublishDate"
     - type: Block
       name: save
       tag: button

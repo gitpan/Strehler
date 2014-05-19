@@ -158,32 +158,18 @@ __PACKAGE__->belongs_to(
   },
 );
 
-=head2 robots
 
-Type: has_many
-
-Related object: L<TestDB::Result::Robot>
-
-=cut
-
-__PACKAGE__->has_many(
-  "robots",
-  "TestDB::Result::Robot",
-  { "foreign.category" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-02-01 23:28:47
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:NLifWkA2yZ5F68gtamJrGg
+# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-03-15 15:14:27
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Dv3xqQdvUCmjbER8yENXTg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 
 __PACKAGE__->has_many(
-  "wines",
-  "TestDB::Result::Wine",
+  "dummies",
+  "TestDB::Result::Dummy",
   { "foreign.category" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
+
 1;

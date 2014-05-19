@@ -63,6 +63,7 @@ sub subcategories
 {
     my $self = shift;
     my @subs;
+    return () if ! $self->row;
     for($self->row->categories)
     {
         push @subs, Strehler::Meta::Category->new('row', $_);
@@ -309,12 +310,24 @@ sub save_form
 sub ext_name
 {
     my $self = shift;
+    return undef if(! $self->row);
     my $category = $self->row->category;
     if($self->row->parent)
     {
         $category = $self->row->parent->category . '/' . $category;
     }
     return $category;
+}
+
+sub check_role
+{
+    my $self = shift;
+    my $role = shift;
+    if(! config->{Strehler}->{admin_secured})
+    {
+        return 1;
+    }
+    return ($role eq 'admin');
 }
 
 

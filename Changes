@@ -1,3 +1,14 @@
+1.1.9
+=====
+
+_Mon May 19 2014_
+
+* Configuration refactoring
+* FomrFu elements to encapsulate all Strehler logic (Category, DisplayOrder,PublishDate, Tags)
+* Articles' search box search now in articles texts too.
+* Documentation
+* Generic bugfix
+
 1.1.8
 =====
 

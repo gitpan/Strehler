@@ -41,9 +41,12 @@ my %WriteMakefileArgs = (
     "File::Path" => 0,
     "HTML::FormFu" => "1.00",
     "HTML::FormFu::Element::Block" => 0,
+    "HTML::FormFu::Element::Fieldset" => 0,
     "HTML::FormFu::Element::Select" => 0,
+    "HTML::FormFu::Element::Text" => 0,
     "HTML::FormFu::Validator" => 0,
     "Moo" => 0,
+    "Moo::Role" => 0,
     "Moose" => 0,
     "SQL::Translator" => 0,
     "Term::ReadKey" => 0,
@@ -57,7 +60,7 @@ my %WriteMakefileArgs = (
     "Test::More" => 0,
     "Test::TCP" => 0
   },
-  "VERSION" => "1.1.8",
+  "VERSION" => "1.1.9",
   "test" => {
     "TESTS" => "t/*.t"
   }

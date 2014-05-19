@@ -1,18 +1,13 @@
-attributes:
-    class: well 
 elements:
-    - type: File
-      name: photo
-      label: Image
-      attributes: 
-        class: span5
+    - name: text
+      label: text
     - type: "+Strehler::FormFu::Element::Category"
     - type: "+Strehler::FormFu::Element::Tags"
-    - name: save
-      type: Block
+    - type: Block
+      name: save
       tag: button
       content: Submit
       attributes:
         type: submit
         class: btn btn-primary
-  
+      

@@ -20,6 +20,48 @@ sub metaclass_data
     return $element_conf{$param};
 }
 
+#Standard configuration overrides
+
+sub label
+{
+    return config->{'Strehler'}->{'extra_menu'}->{'log'}->{label} || "Logs";
+}
+sub creatable
+{
+    return config->{'Strehler'}->{'extra_menu'}->{'log'}->{creatable} || 0;
+}
+sub updatable
+{
+    return config->{'Strehler'}->{'extra_menu'}->{'log'}->{updatable} || 0;
+}
+sub deletable
+{
+    return config->{'Strehler'}->{'extra_menu'}->{'log'}->{deletable} || 0;
+}
+sub custom_list_view
+{
+    return config->{'Strehler'}->{'extra_menu'}->{'log'}->{custom_list_view} || 'admin/log_list';
+}
+sub allowed_role
+{
+    if(config->{'Strehler'}->{'extra_menu'}->{'log'}->{allowed_role})
+    {
+        return config->{'Strehler'}->{'extra_menu'}->{'log'}->{allowed_role};
+    }
+    elsif(config->{'Strehler'}->{'extra_menu'}->{'log'}->{role}) 
+    {
+        #For retrocompatibility
+        return config->{'Strehler'}->{'extra_menu'}->{'log'}->{role};
+    }
+    else
+    {
+        return 'admin';
+    }
+}
+sub class
+{
+    return __PACKAGE__;
+}
 
 sub write
 {
@@ -40,8 +82,6 @@ sub main_title
 sub fields_list
 {
     my $self = shift;
-    my $item = $self->metaclass_data('item_type');
-    my %attributes = Strehler::Helpers::get_entity_data($item);
     my @fields = ( { 'id' => 'id',
                      'label' => 'ID',
                      'ordinable' => 1 },

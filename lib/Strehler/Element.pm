@@ -8,6 +8,8 @@ use Strehler::Meta::Category;
 use Strehler::Helpers;
 use Data::Dumper;
 
+with 'Strehler::Element::Role::Configured';
+
 has row => (
     is => 'ro',
 );
@@ -27,47 +29,17 @@ sub BUILDARGS {
    return { row => $article };
 };
 
-sub category_accessor
+sub metaclass_data 
 {
     my $self = shift;
-    my $category = shift;
-    return $category->can($self->metaclass_data('category_accessor'));
+    my $param = shift;
+    my %element_conf = ( item_type => 'element',
+                         ORMObj => undef,
+                         category_accessor => undef,
+                         multilang_children => undef );
+    return $element_conf{$param};
 }
 
-sub item_type
-{
-    my $self = shift;
-    return $self->metaclass_data('item_type');
-}
-
-sub ORMObj
-{
-    my $self = shift;
-    return $self->metaclass_data('ORMObj');
-}
-sub multilang_children
-{
-    my $self = shift;
-    return $self->metaclass_data('multilang_children');
-}
-sub get_schema
-{
-    if(config->{'Strehler'}->{'schema'})
-    {
-        return schema config->{'Strehler'}->{'schema'};
-    }
-    else
-    {
-        return schema;
-    }
-}
-
-sub publishable
-{
-    my $self = shift;
-    my $item = $self->metaclass_data('item_type');
-    return Strehler::Helpers::get_entity_attr($item, 'publishable');
-}
 sub exists
 {
     my $self = shift;
@@ -301,7 +273,8 @@ sub fields_list
 {
     my $self = shift;
     my $item = $self->metaclass_data('item_type');
-    my %attributes = Strehler::Helpers::get_entity_data($item);
+    my $class = Strehler::Helpers::class_from_entity($item);
+    my %attributes = $class->entity_data();
     my $resultset = $self->get_schema()->resultset($self->ORMObj());
     my $title_id = $self->default_field();
     my $title_label = $title_id ? ucfirst($title_id) : 'Title';
@@ -751,7 +724,7 @@ sub get_form_data
             $data->{$attribute} = $el_row->$attribute;
         }
     }
-    if($self->row->can('category')) #Is the element categorized?
+    if($self->categorized()) #Is the element categorized?
     {
         if($el_row->category->parent)
         {
@@ -760,9 +733,10 @@ sub get_form_data
         }
         else
         {
-        $data->{'category'} = $el_row->category->id;
+            $data->{'category'} = $el_row->category->id;
         }
     }
+    $data->{'tags'} = $self->get_tags();
     my $children = $self->row->can($self->multilang_children());
     if($children)
     {
@@ -851,17 +825,23 @@ sub save_form
             $el_data->{'category'} = $category;
         }
     }
-    my $children;
     if($id)
     {
         $el_row = $self->get_schema()->resultset($self->ORMObj())->find($id);
         $el_row->update($el_data);
+    }
+    else
+    {
+        $el_row = $self->get_schema()->resultset($self->ORMObj())->create($el_data);
+    }
+    my $children = undef;
+    if($id)
+    {
         $children = $el_row->can($self->multilang_children());
         $el_row->$children->delete_all() if($children);
     }
     else
     {
-        $el_row = $self->get_schema()->resultset($self->ORMObj())->create($el_data);
         $children = $el_row->can($self->multilang_children());
     }
     if($children)
@@ -917,6 +897,32 @@ sub save_form
         Strehler::Meta::Tag->save_tags($form->param_value('tags'), $el_row->id, $self->item_type());
     }
     return $el_row->id;  
+}
+
+sub check_role
+{
+    my $self = shift;
+    my $user_role = shift;
+    if(! config->{Strehler}->{admin_secured})
+    {
+        return 1;
+    }
+    my $role = $self->allowed_role();
+    if($role)
+    {
+        if($user_role eq $role)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        return 1;
+    }
 }
 
 1;
