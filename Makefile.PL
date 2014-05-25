@@ -37,6 +37,7 @@ my %WriteMakefileArgs = (
     "Dancer2::Plugin::DBIC" => 0,
     "DateTime::Format::SQLite" => 0,
     "DateTime::Format::Strptime" => 0,
+    "File::Copy" => 0,
     "File::Copy::Recursive" => 0,
     "File::Path" => 0,
     "HTML::FormFu" => "1.00",
@@ -60,7 +61,7 @@ my %WriteMakefileArgs = (
     "Test::More" => 0,
     "Test::TCP" => 0
   },
-  "VERSION" => "1.1.9",
+  "VERSION" => "1.1.10",
   "test" => {
     "TESTS" => "t/*.t"
   }

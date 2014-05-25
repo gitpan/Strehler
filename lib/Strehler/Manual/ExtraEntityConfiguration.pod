@@ -139,7 +139,7 @@ default: generic list view as in the Strehler package
 Let you use a different view for listing entity entries.
 Entries will be passed to the view as "elements" array, with all the basic data of the entity.
 
-=item role
+=item allowed_role
 
 default: ""
 
@@ -149,7 +149,7 @@ If role is equal to admin only admin user will see the entity.
 
 =head1 SEE ALSO
 
-L<Strehler::Manual::ExtraEntityTutorial> explain how to create a new entity and how configuration flags will be used.
+L<Strehler::Manual::ExtraEntityTutorial> explains how to create a new entity and how configuration flags will be used.
 
 =cut
 
