@@ -34,6 +34,8 @@ Test::TCP::test_tcp(
         my $cat = Strehler::Meta::Category->new({ category => 'prova' });
         my $cat_id = $cat->get_attr('id');
 
+        ok(Strehler::Element::Article->slugged(), "Article has slug");
+
         #LIST
         $res = $ua->get($site . "/admin/article/list");
         is($res->code, 200, "Articles page correctly accessed");
@@ -59,6 +61,7 @@ Test::TCP::test_tcp(
         my $article_id = $article->{'id'};
         my $article_object = Strehler::Element::Article->new($article_id);
         ok($article_object->exists(), "Article correctly inserted");
+        is($article_object->get_attr_multilang('slug', 'it'), $article_id . '-automatic-test-title-it', "Slug correctly created");
 
         #TURN ON
         $res = $ua->get($site . "/admin/article/turnon/$article_id");

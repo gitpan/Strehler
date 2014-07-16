@@ -3,6 +3,7 @@ package Strehler::Element::Role::Configured;
 use Moo::Role;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
+use Lingua::EN::Inflect qw(PL classical);
 
 requires 'metaclass_data'; 
 
@@ -17,6 +18,14 @@ sub item_type
 {
     my $self = shift;
     return $self->metaclass_data('item_type');
+}
+sub plural
+{
+    my $self = shift;
+    classical(1);
+    my $plural = PL($self->item_type());
+    $plural = $plural . 's' if $plural eq $self->item_type();
+    return $plural;
 }
 
 sub ORMObj
@@ -44,6 +53,16 @@ sub auto
 {
     my $self = shift;
     return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{auto} || 1;
+}
+sub exposed
+{
+     my $self = shift;
+     return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{exposed} || 1;
+}
+sub slugged
+{
+    my $self = shift;
+    return $self->can('get_by_slug');
 }
 sub label
 {
@@ -126,19 +145,21 @@ sub entity_data
 {
     my $self = shift;
     my @attributes = ('auto', 
-                   'label', 
-                   'class', 
-                   'creatable', 
-                   'updatable', 
-                   'deletable',
-                   'categorized',
-                   'ordered',  
-                   'dated',
-                   'publishable',
-                   'custom_list_view',
-                   'form',
-                   'multilang_form',
-                   'allowed_role');
+                      'exposed',
+                      'slugged',
+                      'label', 
+                      'class', 
+                      'creatable', 
+                      'updatable', 
+                      'deletable',
+                      'categorized',
+                      'ordered',  
+                      'dated',
+                      'publishable',
+                      'custom_list_view',
+                      'form',
+                      'multilang_form',
+                      'allowed_role');
     my %entity_data;
     foreach my $attr (@attributes)
     {
@@ -171,6 +192,8 @@ Every "flag function" just read the role value from Dancer2 config.yml.
 Creating new entities you can set their flags in config.yml or override Configured role's functions.
 
 Overriding functions has priority on config.yml.
+
+Slugged attribute is special, it's based on introspection on the class. You can't change it in config.yml and overriding it could be a bad idea.
 
 =head1 FUNCTIONS
 
@@ -223,6 +246,10 @@ Wrapper for Dancer2 schema keyword, used internally to allow developer to use a 
 =item *
 
 auto
+
+=item *
+
+exposed
 
 =item *
 

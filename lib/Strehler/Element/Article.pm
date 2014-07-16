@@ -6,6 +6,7 @@ use Dancer2 0.11;
 use Dancer2::Plugin::DBIC;
 
 extends 'Strehler::Element';
+with 'Strehler::Element::Role::Slugged';
 
 #Standard element implementation
 
@@ -117,38 +118,6 @@ sub image
         return undef;
     }
 }
-sub save_slug
-{
-    my $self = shift;
-    my $id = shift;
-    my $form = shift;
-    my $lan = shift;
-    if($form->param_value('title_' . $lan))
-    {
-        return $id . '-' . Strehler::Helpers::slugify($form->param_value('title_' . $lan));
-    }
-    else
-    {
-        return undef;
-    }
-}
-
-#Method to manage slugs
-sub get_by_slug
-{
-    my $self = shift;
-    my $slug = shift;
-    my $language = shift;
-    my $chapter = $self->get_schema()->resultset('Content')->find({ slug => $slug, language => $language });
-    if($chapter)
-    {
-        return $self->new($chapter->article->id);
-    }
-    else
-    {
-        return undef;
-    }
-}
 
 =encoding utf8
 
@@ -162,28 +131,10 @@ Base Strehler content, it's used to create general articles, multilanguage.
 
 Its main title is the title in the language configured as default.
 
-It also manages slugs, automatically generated using L<Strehler::Helpers> function slugify.
-Articles can be retrived using slug through the get_by_slug function.
+=head1 FEATURES
 
-=head1 SYNOPSIS
+It implements L<Strehler::Element::Role::Slugged> so you can use slugs to refer to articles
 
-    my $article = Strehler::Element::Article->get_by_slug('a-slug-suitable-for-web', $language)
-
-=head1 FUNCTIONS
-
-=over 4
-
-=item get_by_slug
-
-arguments: $slug, $language
-
-retur value: $article
-
-Retrive the Article $article using the slug generated in automatic by CMS. Language is given because a slug can exist under a language but not under another.
-
-If no article with give slug is present, function return undef.
-
-=back
 
 =cut
 

@@ -1,4 +1,4 @@
-package Site::Dummy;
+package Site::Puppet;
 
 use Moo;
 use Dancer2;
@@ -10,9 +10,9 @@ sub metaclass_data
 {
     my $self = shift;
     my $param = shift;
-    my %element_conf = ( item_type => 'dummy',
-                         ORMObj => 'Dummy',
-                         category_accessor => 'dummies',
+    my %element_conf = ( item_type => 'puppet',
+                         ORMObj => 'Puppet',
+                         category_accessor => undef,
                          multilang_children => undef );
     return $element_conf{$param};
 }

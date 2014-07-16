@@ -43,6 +43,18 @@ default: 1
 
 Tell Strehler to use standard implementation for all the backend navigations. With auto = 0, paths like /admin/entity/list have to be implemented.
 
+=item exposed
+
+default: 1
+
+Data about the entity is automatically exposed through Strehler's APIs.
+
+=item plural
+
+default: a label deriver from item_type using L<Lingua::EN::Inflect>
+
+Label that will be used to build API paths.
+
 =item label
 
 default: ???

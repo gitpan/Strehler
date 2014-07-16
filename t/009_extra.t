@@ -36,6 +36,8 @@ Test::TCP::test_tcp(
         my $cat = Strehler::Meta::Category->new({ category => 'prova' });
         my $cat_id = $cat->get_attr('id');
 
+        ok(Site::Dummy->slugged(), "Dummy has slug");
+
         #LIST
         $res = $ua->get($site . "/admin/dummy/list");
         is($res->code, 200, "Dummy list page correctly accessed");
@@ -53,7 +55,12 @@ Test::TCP::test_tcp(
         my $dummy_id = $dummy->{'id'};
         my $dummy_object = Site::Dummy->new($dummy_id);
         ok($dummy_object->exists(), "Dummy object correctly inserted");
-
+        is($dummy_object->get_attr('slug'), $dummy_id . '-a-dumb-text', "Slug correctly created");
+        
+        #CALL BY SLUG
+        $res = $ua->get($site . "/dummyslug/".$dummy_object->get_attr('slug'));        
+        is($res->content, $dummy_id, "Get by Slug on dummy");
+        
         #DELETE
         $ua->default_header('X-Requested-With' => undef);
         $res = $ua->post($site . "/admin/dummy/delete/$dummy_id");

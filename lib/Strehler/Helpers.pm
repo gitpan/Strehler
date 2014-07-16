@@ -21,16 +21,20 @@ sub slugify
 
 sub get_categorized_entities
 {
-    my @entities = ('article', 'image'); #standard entities for Strehler
-    my $extra = config->{'Strehler'}->{'extra_menu'};
-    for(keys %{$extra})
+    my @entities = entities_list();
+    my @out;
+    for(@entities)
     {
-        if(config->{'Strehler'}->{'extra_menu'}->{$_}->{'categorized'})
-        {
-            push @entities, $_;
-        }
+        my $cl = class_from_entity($_);
+        push @out, $_ if $cl->categorized();
     }
-    return @entities;
+    return @out;
+}
+sub entities_list
+{
+    my @standard_entities = ('article', 'image', 'user', 'log');
+    my @configured_entities = keys %{config->{'Strehler'}->{'extra_menu'}};
+    return (@standard_entities, @configured_entities);
 }
 
 sub class_from_entity
@@ -62,6 +66,29 @@ sub class_from_entity
         eval("require $class");
         return $class;
     }
+}
+
+sub class_from_plural
+{
+    my $plural = shift;
+    foreach my $class ('Strehler::Element::Article', 'Strehler::Element::Image', 'Strehler::Element::User', 'Strehler::Element::Log')
+    {
+        eval("require $class");
+        if($class->plural() eq $plural)
+        {
+            return $class;
+        }
+    }
+    foreach my $entity (keys config->{'Strehler'}->{'extra_menu'})
+    {
+        my $entity_class = config->{'Strehler'}->{'extra_menu'}->{$entity}->{'class'};
+        eval("require $entity_class");
+        if($entity_class->plural() eq $plural)
+        {
+            return $entity_class;
+        }
+    }
+    return undef;
 }
 
 =encoding utf8

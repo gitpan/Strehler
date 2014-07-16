@@ -1,4 +1,4 @@
-package Site::Dummy;
+package Site::Foo;
 
 use Moo;
 use Dancer2;
@@ -10,9 +10,9 @@ sub metaclass_data
 {
     my $self = shift;
     my $param = shift;
-    my %element_conf = ( item_type => 'dummy',
-                         ORMObj => 'Dummy',
-                         category_accessor => 'dummies',
+    my %element_conf = ( item_type => 'foo',
+                         ORMObj => 'foos',
+                         category_accessor => 'foos',
                          multilang_children => undef );
     return $element_conf{$param};
 }
@@ -27,5 +27,10 @@ sub to_slug
 sub multilang_slug
 {
     return 0;
+}
+
+sub categorized
+{
+    return 1;
 }
 1;
