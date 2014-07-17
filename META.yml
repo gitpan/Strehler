@@ -52,4 +52,4 @@ requires:
   Text::Unidecode: 0
   Unicode::Normalize: 0
   YAML::XS: 0
-version: 1.2.0
+version: 1.2.1
