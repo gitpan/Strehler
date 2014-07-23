@@ -95,6 +95,7 @@ lib/Strehler/views/admin/index.tt
 lib/Strehler/views/admin/log_list.tt
 lib/Strehler/views/admin/login.tt
 lib/Strehler/views/admin/message.tt
+lib/Strehler/views/admin/no_category.tt
 lib/Strehler/views/admin/open_tags.tt
 lib/Strehler/views/admin/user.tt
 lib/Strehler/views/api/reference.tt
@@ -114,6 +115,7 @@ t/res/strehler.jpg
 t/testapp/bin/app.pl
 t/testapp/config.yml
 t/testapp/forms/dummy.yml
+t/testapp/forms/puppet.yml
 t/testapp/lib/Site.pm
 t/testapp/lib/Site/Dummy.pm
 t/testapp/lib/Site/Foo.pm
