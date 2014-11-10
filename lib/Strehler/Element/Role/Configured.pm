@@ -49,15 +49,27 @@ sub get_schema
         return schema;
     }
 }
+sub _property
+{
+    my $self = shift;
+    my $prop = shift;
+    my $default = shift;
+    return exists config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{$prop} ? config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{$prop} : $default;
+}
+sub visible
+{
+    my $self = shift;
+    return $self->_property('visible', 1);
+}
 sub auto
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{auto} || 1;
+    return $self->_property('auto', 1);
 }
 sub exposed
 {
-     my $self = shift;
-     return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{exposed} || 1;
+    my $self = shift;
+    return $self->_property('exposed', 1);
 }
 sub slugged
 {
@@ -67,71 +79,66 @@ sub slugged
 sub label
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{label} || "???";
+    return $self->_property('label', '???');
 }
 sub class
 {
     my $self = shift;
-    return return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{class} || 'Strehler::Element';
+    return $self->_property('class', 'Strehler::Element');
 }
 sub creatable
 {
-     my $self = shift;
-     return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{creatable} || 1;
+    my $self = shift;
+    return $self->_property('creatable', 1);
 }
 sub updatable
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{updatable} || 1;
+    return $self->_property('updatable', 1);
 }
 sub deletable
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{deletable} || 1;
+    return $self->_property('deletable', 1);
 }
 sub categorized
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{categorized} || 0;
+    return $self->_property('categorized', 0);
 }
 sub ordered
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{ordered} || 0;
+    return $self->_property('ordered', 0);
 }
 sub dated
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{dated} || 0;
+    return $self->_property('dated', 0);
 }
 sub publishable
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{publishable} || 0,
-}
-sub custom_list_view
-{
-    my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{custom_list_view} || undef;
+    return $self->_property('publishable', 0);
 }
 sub form
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{form} || undef;
+    return $self->_property('form', undef);
 }
 sub multilang_form
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{multilang_form} || undef;
+    return $self->_property('multilang_form', undef);
 }
 sub allowed_role
 {
     my $self = shift;
-    if(config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{allowed_role})
+    if(exists config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{allowed_role})
     {
         return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{allowed_role};
     }
-    elsif(config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{role}) 
+    elsif(exists config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{role}) 
     {
         #For retrocompatibility
         return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{role};
@@ -141,6 +148,12 @@ sub allowed_role
         return undef;
     }
 }
+sub custom_list_template
+{
+    my $self = shift;
+    return $self->_property('custom_list_template', undef);
+}
+
 sub entity_data
 {
     my $self = shift;
@@ -156,10 +169,11 @@ sub entity_data
                       'ordered',  
                       'dated',
                       'publishable',
-                      'custom_list_view',
                       'form',
                       'multilang_form',
-                      'allowed_role');
+                      'allowed_role',
+                      'custom_list_template',
+                      'visible');
     my %entity_data;
     foreach my $attr (@attributes)
     {
@@ -177,6 +191,11 @@ sub multilang_data_fields
 {
     return undef;
 }
+sub custom_add_snippet
+{
+    return undef;
+}
+
 =encoding utf8
 
 =head1 NAME
@@ -239,6 +258,12 @@ return $schema
 
 Wrapper for Dancer2 schema keyword, used internally to allow developer to use a different schema from default for Strehler
 
+=item _property
+
+return $prop
+
+Generic function to manage flag properties.
+
 =item "flag functions"
 
 =over 6
@@ -289,10 +314,6 @@ publishable
 
 =item *
 
-custom_list_view
-
-=item *
-
 form
 
 =item *
@@ -303,11 +324,37 @@ multilang_form
 
 allowed_role
 
+=item * 
+
+custom_list_template
+
 =back
 
-All these functions read from configuration file status of the property. They can be overriden to configure different values for properties in custom element with non configuration file involvement.
+All these functions read from configuration file the property. They can be overriden to configure different values for properties without involving configuration file.
 
 For the meaning of every flag see L<Strehler::Manual::ExtraEntityConfiguration>
+
+=item "complex info functions"
+
+=over 6
+
+=item * 
+
+data_fields
+
+=item *
+
+multilang_data_fields
+
+=item *
+
+custom_add_snippet
+
+=back
+
+All these functions have no reference in the configuration file, but overriding them you can obtain more customization.
+
+For the meaning of each function  see L<Strehler::Manual::ExtraEntityConfiguration>
 
 =item get_schema
 
@@ -320,26 +367,6 @@ Wrapper for Dancer2 schema keyword, used internally to allow developer to use a 
 return %data
 
 Return all the configuration for an element as an hash
-
-=item data_fields
-
-return undef
-
-This method can be overriden to give back different fields from the database columns in get_basic_data function.
-
-In a custom element make it return an array of strings.
-
-WARNING: behaviour unpredictable if any string is not a database column or a custom function.
-
-=item multilang_data_fields
-
-return undef
-
-This method can be overriden to give back different fields from the database columns in get_ext_data function (it controls multilang fields).
-
-In a custom element make it return an array of strings.
-
-WARNING: behaviour unpredictable if any string is not a database column of the multilang table or a custom function.
 
 
 =back

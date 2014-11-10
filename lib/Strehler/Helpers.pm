@@ -1,8 +1,9 @@
 package Strehler::Helpers;
 
-use Dancer2 0.11;
+use Dancer2 0.153002;
 use Unicode::Normalize;
 use Text::Unidecode;
+use Data::Dumper;
 
 
 #Barely copied from http://stackoverflow.com/questions/4009281/how-can-i-generate-url-slugs-in-perl
@@ -30,12 +31,43 @@ sub get_categorized_entities
     }
     return @out;
 }
+sub standard_entities
+{
+    return ('article', 'image', 'user', 'log');
+}
 sub entities_list
 {
-    my @standard_entities = ('article', 'image', 'user', 'log');
+    my @entities = standard_entities();
     my @configured_entities = keys %{config->{'Strehler'}->{'extra_menu'}};
-    return (@standard_entities, @configured_entities);
+    foreach my $e (@configured_entities)
+    {
+        push @entities, $e if(! grep {$_ eq $e} @entities);
+    }
+    return @entities;
 }
+sub top_bars
+{
+    my @entities = entities_list();
+    my @editor_menu;
+    my @admin_menu;
+    foreach my $e (@entities)
+    {
+        my $c = class_from_entity($e);
+        if($c->visible())
+        {
+            if($c->allowed_role() && $c->allowed_role() eq "admin")
+            {
+                push @admin_menu, { name => $e, label => $c->label() };
+            }
+            else
+            {
+                push @editor_menu, { name => $e, label => $c->label() };
+            }
+        }
+    }
+    return \@editor_menu, \@admin_menu;
+}
+
 
 sub class_from_entity
 {

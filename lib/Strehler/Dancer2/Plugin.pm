@@ -3,13 +3,14 @@ package Strehler::Dancer2::Plugin;
     $Strehler::Dancer2::Plugin::VERSION = '1.0.0';
 }
 use Dancer2::Plugin;
+use Strehler::Helpers;
 
 on_plugin_import {
     my $dsl = shift;
     $dsl->prefix('/admin');
-    $dsl->set(layout => 'admin');
     $dsl->app->add_hook(
         Dancer2::Core::Hook->new(name => 'before', code => sub {
+                $dsl->set(layout => 'admin');
                 my $context = shift;
                 return if(! $dsl->config->{Strehler}->{admin_secured});
                 if((! $context->session->read('user')) && $context->request->path_info ne $dsl->dancer_app->prefix . '/login')
@@ -45,9 +46,12 @@ on_plugin_import {
             }
             else
             {
-                $tokens->{'role'} = $dsl->context->session->read('role');
-                $tokens->{'user'} = $dsl->context->session->read('user');
+                $tokens->{'role'} = $dsl->app->session->read('role');
+                $tokens->{'user'} = $dsl->app->session->read('user');
             }
+            my ($editor_menu, $admin_menu) = Strehler::Helpers::top_bars();
+            $tokens->{'editor_menu'} = $editor_menu;
+            $tokens->{'admin_menu'} = $admin_menu;
         }));
     };
     

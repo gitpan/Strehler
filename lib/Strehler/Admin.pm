@@ -1,6 +1,6 @@
 package Strehler::Admin;
 
-use Dancer2 0.11;
+use Dancer2 0.153002;
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::Ajax;
 use Strehler::Dancer2::Plugin;
@@ -30,7 +30,6 @@ my $root_path = __FILE__;
 $root_path =~ s/Admin\.pm//;
 
 my $form_path = $root_path . 'forms';
-my $public_path = $root_path . 'public/strehler';
 
 set views => $root_path . 'views';
 
@@ -82,61 +81,6 @@ get '/logout' => sub
     session 'role' => undef;
     my $redir = redirect(dancer_app->prefix . '/');
     return $redir;
-};
-
-##### Images #####
-
-any '/image/add' => sub
-{
-    my $form = form_image('add');
-    my $params_hashref = params;
-    my $check_cat = Strehler::Meta::Category->no_categories();
-    if($check_cat)
-    {
-        my $message = "No category in the system. Create a category before creating categorized content.";    
-        my $return = dancer_app->prefix . "/";
-        my $create = dancer_app->prefix . "/category/add";
-        return template "admin/no_category", { message => $message, backlink => $return, createlink => $create };
-    }
-
-    $form = tags_for_form($form, $params_hashref);
-    $form->process($params_hashref);
-    if($form->submitted_and_valid)
-    {
-        my $img = request->upload('photo');
-        my $id = Strehler::Element::Image->save_form(undef, $img, $form);
-        Strehler::Element::Log->write(session->read('user'), 'add', 'image', $id);
-        redirect dancer_app->prefix . '/image/edit/' . $id;
-    }
-    template "admin/image", { form => $form->render() }
-};
-
-get '/image/edit/:id' => sub {
-    my $id = params->{id};
-    my $image = Strehler::Element::Image->new($id);
-    my $form_data = $image->get_form_data();
-    my $form = form_image('edit', $form_data->{'category'});
-    $form->default_values($form_data);
-    template "admin/image", { id => $id, form => $form->render(), img_source => $image->get_attr('image') }
-};
-
-post '/image/edit/:id' => sub
-{
-    my $form = form_image('edit');
-    my $id = params->{id};
-    my $params_hashref = params;
-    $form = tags_for_form($form, $params_hashref);
-    $form->process($params_hashref);
-    my $message;
-    if($form->submitted_and_valid)
-    {
-        my $img = request->upload('photo');
-        Strehler::Element::Image->save_form($id, $img, $form);
-        Strehler::Element::Log->write(session->read('user'), 'edit', 'image', $id);
-        redirect dancer_app->prefix . '/image/list';
-    }
-    my $img = Strehler::Element::Image->new($id);
-    template "admin/image", { form => $form->render(),img_source => $img->get_attr('image') }
 };
 
 ajax '/image/src/:id' => sub
@@ -448,7 +392,8 @@ any '/:entity/list' => sub
     }
     send_error("Access denied", 403) && return if ( ! $class->check_role(session->read('role')));
 
-    my $custom_list_view = $class->custom_list_view() || 'admin/generic_list';
+    my $custom_list_template = $class->custom_list_template();
+    my $list_view = $custom_list_template ? 'admin/custom_list' : 'admin/generic_list';
     
     my $page = exists params->{'page'} ? params->{'page'} : session $entity . '-page';
     my $cat_param = exists params->{'cat'} ? params->{'cat'} : session $entity . '-cat-filter';
@@ -513,7 +458,7 @@ any '/:entity/list' => sub
     session $entity . '-order-by' => $order_by;
     session $entity . '-search' => $search;
     session $entity . '-ancestor' => $ancestor;
-    template $custom_list_view, { (entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, search => $search, order => $order, order_by => $order_by, fields => $class->fields_list(), last_page => $elements->{'last_page'}), $class->entity_data() };
+    template $list_view, { (entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, search => $search, order => $order, order_by => $order_by, fields => $class->fields_list(), last_page => $elements->{'last_page'}), $class->entity_data(), custom_list_template => $custom_list_template };
 };
 get '/:entity/turnon/:id' => sub
 {
@@ -654,13 +599,13 @@ any '/:entity/add' => sub
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        my $id = $class->save_form(undef, $form);
+        my $id = $class->save_form(undef, $form, request->uploads());
         Strehler::Element::Log->write(session->read('user'), 'add', $entity, $id);
         redirect dancer_app->prefix . '/' . $entity . '/list';
     }
     my $fake_tags = $form->get_element({ name => 'tags'});
     $form->remove_element($fake_tags) if($fake_tags);
-    template "admin/generic_add", { entity => $entity, label => $class->label(), form => $form->render() }
+    template "admin/generic_add", { entity => $entity, label => $class->label(), form => $form->render(), custom_snippet => $class->custom_add_snippet() }
 };
 get '/:entity/edit/:id' => sub {
     my $id = params->{id};
@@ -679,7 +624,7 @@ get '/:entity/edit/:id' => sub {
         return pass;
     }
     $form->default_values($form_data);
-    template "admin/generic_add", {  entity => $entity, label => $class->label(), id => $id, form => $form->render() }
+    template "admin/generic_add", {  entity => $entity, label => $class->label(), id => $id, form => $form->render(), custom_snippet => $el->custom_add_snippet() }
 };
 post '/:entity/edit/:id' => sub
 {
@@ -701,11 +646,12 @@ post '/:entity/edit/:id' => sub
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        $class->save_form($id, $form);
+        $class->save_form($id, $form, request->uploads());
         Strehler::Element::Log->write(session->read('user'), 'edit', $entity, $id);
         redirect dancer_app->prefix . '/' . $entity . '/list';
     }
-    template "admin/generic_add", { entity => $entity, label => $class->label(), id => $id, form => $form->render() }
+    my $el = $class->new($id);
+    template "admin/generic_add", { entity => $entity, label => $class->label(), id => $id, form => $form->render(),  custom_snippet => $el->custom_add_snippet()}
 };
 
 ##### Helpers #####
@@ -717,23 +663,6 @@ sub form_login
     $form->auto_error_class('error-msg');
     $form->load_config_file( $form_path . '/admin/login.yml' );
     return $form;    
-}
-
-sub form_image
-{
-    my $action = shift;
-    my $has_sub = shift;
-    my $form = HTML::FormFu->new;
-    $form->auto_error_class('error-msg');
-    $form->load_config_file( $form_path . '/admin/image.yml' );
-    $form = add_multilang_fields($form, \@languages, $form_path . '/admin/image_multilang.yml'); 
-    $form->constraint({ name => 'photo', type => 'Required' }) if $action eq 'add';
-    my $category_block = $form->get_element({ name => 'categoryblock'});
-    my $category = $category_block->get_element({ name => 'category'});
-    $category->options(Strehler::Meta::Category->make_select());
-    my $subcategory = $category_block->get_element({ name => 'subcategory'});
-    $subcategory->options(Strehler::Meta::Category->make_select($has_sub));
-    return $form;
 }
 
 sub form_article

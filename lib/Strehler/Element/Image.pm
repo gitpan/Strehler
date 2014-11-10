@@ -1,11 +1,16 @@
 package Strehler::Element::Image;
 
 use Moo;
-use Dancer2 0.11;
+use Dancer2 0.153002;
 use Dancer2::Plugin::DBIC;
 use Data::Dumper;
 
 extends 'Strehler::Element';
+
+my $root_path = __FILE__;
+$root_path =~ s/Image\.pm//;
+my $form_path = $root_path . "../forms";
+my $views_path = $root_path . "../views";
 
 #Standard element implementation
 
@@ -30,14 +35,20 @@ sub categorized
 {
     return config->{'Strehler'}->{'extra_menu'}->{'image'}->{categorized} || 1;
 }
-sub custom_list_view
-{
-        return config->{'Strehler'}->{'extra_menu'}->{'image'}->{custom_list_view} || 'admin/image_list';
-}
+
 sub class
 {
     return __PACKAGE__;
 }
+sub form
+{
+    return $form_path . '/admin/image.yml';
+}
+sub multilang_form
+{
+    return $form_path . '/admin/image_multilang.yml';
+}
+
 
 #Main title redefined to fetch title from multilang attributes
 sub main_title
@@ -78,9 +89,10 @@ sub save_form
 {
     my $self = shift;
     my $id = shift;
-    my $img = shift;
     my $form = shift;
+    my $uploads = shift;
         
+    my $img = $uploads->{'photo'};
     my $ref; 
     my $path;
     my $public;
@@ -138,6 +150,25 @@ sub search_box
     $parameters->{'search'} = { 'descriptions.title' => { 'like', "%$string%" } };
     $parameters->{'join'} = 'descriptions';
     return $self->get_list($parameters);
+}
+
+sub custom_add_snippet
+{
+    my $self = shift;
+    if(ref($self))
+    {
+        return "<p>Image:</p>" .
+               '<img class="span2" src=' . $self->get_attr('image') . " />"; 
+    }
+    else
+    {
+        return undef;
+    }
+}
+
+sub custom_list_template
+{
+    return $views_path . "/admin/blocks/image_list_block.tt";
 }
 
 =encoding utf8

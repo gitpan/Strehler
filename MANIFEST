@@ -25,6 +25,7 @@ lib/Strehler/FormFu/Element/PublishDate.pm
 lib/Strehler/FormFu/Element/Slug.pm
 lib/Strehler/FormFu/Element/Tags.pm
 lib/Strehler/FormFu/Validator/CategoryUnique.pm
+lib/Strehler/FormFu/Validator/FilenameTooLong.pm
 lib/Strehler/Helpers.pm
 lib/Strehler/Manual/Configuration.pod
 lib/Strehler/Manual/ExtraEntityConfiguration.pod
@@ -81,11 +82,14 @@ lib/Strehler/public/strehler/js/jquery-ui-1.10.3.custom.min.js
 lib/Strehler/public/strehler/js/jquery.js
 lib/Strehler/public/strehler/js/strehler.js
 lib/Strehler/views/admin/article.tt
+lib/Strehler/views/admin/blocks/image_list_block.tt
 lib/Strehler/views/admin/blocks/listblocks.tt
+lib/Strehler/views/admin/blocks/log_list_block.tt
 lib/Strehler/views/admin/category.tt
 lib/Strehler/views/admin/category_list.tt
 lib/Strehler/views/admin/category_select.tt
 lib/Strehler/views/admin/configured_tags.tt
+lib/Strehler/views/admin/custom_list.tt
 lib/Strehler/views/admin/delete.tt
 lib/Strehler/views/admin/generic_add.tt
 lib/Strehler/views/admin/generic_list.tt
@@ -102,7 +106,12 @@ lib/Strehler/views/api/reference.tt
 lib/Strehler/views/layouts/admin.tt
 lib/Strehler/views/layouts/light-admin.tt
 script/strehler
+sessions/VF-N4BSkrmaiidX8quaY12dYkas5BooH.yml
+sessions/VF-N7ioqYhHz6Apj2ivXj734yo9yLSGZ.yml
+sessions/VF-ln2WdvX5hjljNfuPManTPXkW0wpDW.yml
+sessions/VGE8dc-JEVIRC1ZsE4BODr5IeBtAGWrG.yml
 t/001_login.t
+t/001_plack_login.t
 t/002_permissions.t
 t/004_categories.t
 t/005_articles.t
