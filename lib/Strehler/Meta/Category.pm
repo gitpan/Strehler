@@ -1,5 +1,6 @@
 package Strehler::Meta::Category;
-
+$Strehler::Meta::Category::VERSION = '1.3.1';
+use strict;
 use Moo;
 use Dancer2;
 use Dancer2::Plugin::DBIC;

@@ -1,5 +1,8 @@
 package Strehler::FormFu::Element::Tags;
+$Strehler::FormFu::Element::Tags::VERSION = '1.3.1';
+use strict;
 use Moose;
+
 extends 'HTML::FormFu::Element::Block';
 
 after BUILD => sub {

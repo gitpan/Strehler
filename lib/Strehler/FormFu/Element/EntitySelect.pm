@@ -1,5 +1,8 @@
 package Strehler::FormFu::Element::EntitySelect;
+$Strehler::FormFu::Element::EntitySelect::VERSION = '1.3.1';
+use strict;
 use Moose;
+
 extends 'HTML::FormFu::Element::Select';
 
 use Carp qw( croak );

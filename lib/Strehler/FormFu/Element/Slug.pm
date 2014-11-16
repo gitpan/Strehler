@@ -1,6 +1,8 @@
 package Strehler::FormFu::Element::Slug;
-
+$Strehler::FormFu::Element::Slug::VERSION = '1.3.1';
+use strict;
 use Moose;
+
 extends 'HTML::FormFu::Element::Label';
 
 after BUILD => sub {

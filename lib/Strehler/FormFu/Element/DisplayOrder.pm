@@ -1,5 +1,8 @@
 package Strehler::FormFu::Element::DisplayOrder;
+$Strehler::FormFu::Element::DisplayOrder::VERSION = '1.3.1';
+use strict;
 use Moose;
+
 extends 'HTML::FormFu::Element::Fieldset';
 
 after BUILD => sub {

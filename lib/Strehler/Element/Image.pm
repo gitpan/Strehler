@@ -1,9 +1,9 @@
 package Strehler::Element::Image;
-
+$Strehler::Element::Image::VERSION = '1.3.1';
+use strict;
 use Moo;
 use Dancer2 0.153002;
 use Dancer2::Plugin::DBIC;
-use Data::Dumper;
 
 extends 'Strehler::Element';
 
@@ -29,11 +29,13 @@ sub metaclass_data
 
 sub label
 {
-    return config->{'Strehler'}->{'extra_menu'}->{'image'}->{label} || "Images";
+    my $self = shift;
+    return $self->_property('label', 'Images');
 }
 sub categorized
 {
-    return config->{'Strehler'}->{'extra_menu'}->{'image'}->{categorized} || 1;
+    my $self = shift;
+    return $self->_property('categorized', 1);
 }
 
 sub class

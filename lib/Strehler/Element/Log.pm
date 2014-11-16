@@ -1,5 +1,6 @@
 package Strehler::Element::Log;
-
+$Strehler::Element::Log::VERSION = '1.3.1';
+use strict;
 use Moo;
 use Dancer2 0.153002;
 use Dancer2::Plugin::DBIC;
@@ -28,39 +29,33 @@ sub metaclass_data
 #Standard configuration overrides
 sub exposed
 {
-    return config->{'Strehler'}->{'extra_menu'}->{'log'}->{exposed} || 0;
+    my $self = shift;
+    return $self->_property('exposed', 0);
 }
 sub label
 {
-    return config->{'Strehler'}->{'extra_menu'}->{'log'}->{label} || "Logs";
+    my $self = shift;
+    return $self->_property('label', 'Logs');
 }
 sub creatable
 {
-    return config->{'Strehler'}->{'extra_menu'}->{'log'}->{creatable} || 0;
+    my $self = shift;
+    return $self->_property('creatable', 0);
 }
 sub updatable
 {
-    return config->{'Strehler'}->{'extra_menu'}->{'log'}->{updatable} || 0;
+    my $self = shift;
+    return $self->_property('updatable', 0);
 }
 sub deletable
 {
-    return config->{'Strehler'}->{'extra_menu'}->{'log'}->{deletable} || 0;
+    my $self = shift;
+    return $self->_property('deletable', 0);
 }
 sub allowed_role
 {
-    if(config->{'Strehler'}->{'extra_menu'}->{'log'}->{allowed_role})
-    {
-        return config->{'Strehler'}->{'extra_menu'}->{'log'}->{allowed_role};
-    }
-    elsif(config->{'Strehler'}->{'extra_menu'}->{'log'}->{role}) 
-    {
-        #For retrocompatibility
-        return config->{'Strehler'}->{'extra_menu'}->{'log'}->{role};
-    }
-    else
-    {
-        return 'admin';
-    }
+    my $self = shift;
+    return $self->_property('allowed_role', 'admin');
 }
 sub class
 {

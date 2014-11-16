@@ -1,5 +1,8 @@
 package Strehler::FormFu::Element::PublishDate;
+$Strehler::FormFu::Element::PublishDate::VERSION = '1.3.1';
+use strict;
 use Moose;
+
 extends 'HTML::FormFu::Element::Text';
 
 after BUILD => sub {

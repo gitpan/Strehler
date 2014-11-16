@@ -1,10 +1,7 @@
 use strict;
 use warnings;
 package Strehler;
-{
-  $Strehler::VERSION = '1.3.0';
-}
-
+$Strehler::VERSION = '1.3.1';
 # ABSTRACT: A light-weight, nerdy, smart CMS in perl based on Perl Dancer2 framework.
 
 =encoding utf8
@@ -142,6 +139,17 @@ Now at the url http://YOURAPP/admin you'll find Strehler backend!
 =head1 COMPLETE DOCUMENTATION
 
 For now, best place to learn how Strehler works is the github wiki: L<https://github.com/cym0n/strehler/wiki>
+
+=head1 AUTHOR
+
+Simone "Cymon" Fare'
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2014 by Simone "Cymon" Fare'.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
 
