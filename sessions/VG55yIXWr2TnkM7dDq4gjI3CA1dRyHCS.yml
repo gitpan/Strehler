@@ -1,0 +1,6 @@
+---
+image-order: asc
+image-order-by: descriptions.title
+image-page: 1
+role: admin
+user: admin

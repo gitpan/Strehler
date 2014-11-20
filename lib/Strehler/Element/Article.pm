@@ -1,8 +1,8 @@
 package Strehler::Element::Article;
-$Strehler::Element::Article::VERSION = '1.3.1';
+$Strehler::Element::Article::VERSION = '1.3.2';
 use strict;
 use Moo;
-use Dancer2 0.153002;
+use Dancer2 0.154000;
 use Dancer2::Plugin::DBIC;
 
 extends 'Strehler::Element';
