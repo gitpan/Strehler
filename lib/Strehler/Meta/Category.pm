@@ -1,5 +1,5 @@
 package Strehler::Meta::Category;
-$Strehler::Meta::Category::VERSION = '1.3.2';
+$Strehler::Meta::Category::VERSION = '1.3.3';
 use strict;
 use Moo;
 use Dancer2;

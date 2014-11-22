@@ -1,6 +1,6 @@
 use utf8;
 package Strehler::Schema::Result::Article;
-$Strehler::Schema::Result::Article::VERSION = '1.3.2';
+$Strehler::Schema::Result::Article::VERSION = '1.3.3';
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 

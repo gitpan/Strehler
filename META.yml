@@ -56,4 +56,4 @@ requires:
 resources:
   homepage: http://www.strehler-cms.org
   repository: https://github.com/cym0n/strehler.git
-version: 1.3.2
+version: 1.3.3
