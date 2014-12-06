@@ -1,10 +1,10 @@
 package Strehler::Admin;
-$Strehler::Admin::VERSION = '1.3.3';
+$Strehler::Admin::VERSION = '1.4.0';
 use strict;
 use Dancer2 0.154000;
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::Ajax;
-use Strehler::Dancer2::Plugin;
+use Strehler::Dancer2::Plugin::Admin;
 use HTML::FormFu 1.00;
 use HTML::FormFu::Element::Block;
 use Authen::Passphrase::BlowfishCrypt;
@@ -204,6 +204,40 @@ post '/user/edit/:id' => sub
     }
     template "admin/user", { form => $form->render(), message => $message }
 };
+
+get '/user/password' => sub {
+    my $user = Strehler::Element::User->get_from_username(session->read('user'));
+    my $form_data = $user->get_form_data();
+    my $form = form_user('password');
+    $form->default_values($form_data);
+    template "admin/user", { form => $form->render() }
+};
+post '/user/password' => sub
+{
+    send_error("Wrong call", 500) && return if params->{user};
+    my $user = Strehler::Element::User->get_from_username(session->read('user'));
+    my $id = $user->get_attr('id');
+    my $form = form_user('password');
+    my $params_hashref = params;
+    $form->process($params_hashref);
+    my $message;
+    if($form->submitted_and_valid)
+    {
+        my $return_id = Strehler::Element::User->save_password($id, $form);
+        if($return_id == -1)
+        {
+            $message = "Username already in use";
+        }
+        else
+        {
+            Strehler::Element::Log->write(session->read('user'), 'change password', 'user', $id);
+            redirect dancer_app->prefix . '/';
+        }
+    }
+    template "admin/user", { form => $form->render(), message => $message }
+};
+
+
 
 #Categories
 
@@ -721,6 +755,20 @@ sub form_user
     {
         $form->constraint({ name => 'password', type => 'Required' }); 
         $form->constraint({ name => 'password-confirm', type => 'Required' }); 
+        $form->constraint({ name => 'user', type => 'Required' }); 
+    }
+    elsif($action eq 'edit')
+    {
+        $form->constraint({ name => 'user', type => 'Required' }); 
+    }
+    elsif($action eq 'password')
+    {
+        my $user = $form->get_element({ name => 'user' });
+        $user->attributes->{readonly} = 'readonly';
+        $user->attributes->{disabled} = 'disabled';
+        my $role = $form->get_element({ name => 'role' });
+        $role->attributes->{readonly} = 'readonly';
+        $role->attributes->{disabled} = 'disabled';
     }
     return $form;
 }
@@ -852,7 +900,7 @@ Strehler::Admin - App holding the routes used by Strehler backend
 
 Strehler::Admin holds all the routes used by Strehler to erogate views. It also contains some helpers, mostly about form management, called inside routes.
 
-The use of the L<Strehler::Dancer2::Plugin> makes all the routes to have /admin as prefix.
+The use of the L<Strehler::Dancer2::Plugin::Admin> makes all the routes to have /admin as prefix.
 
 Routes have the structure:
 

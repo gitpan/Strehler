@@ -18,6 +18,11 @@
         </div>
     </div>
     <div>
+        <a href="/ex/slug/[% article.slug %]">This link</a> display the same article, but using <strong>EX plugin</strong>. Check-out the way it works looking to <em>lib/Site.pm</em>.
+
+    </div>
+    <br />
+    <div>
         <a href="/">&lt; Back to home</a>
     </div>
 </div>

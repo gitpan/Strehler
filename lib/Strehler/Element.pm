@@ -1,5 +1,5 @@
 package Strehler::Element;
-$Strehler::Element::VERSION = '1.3.3';
+$Strehler::Element::VERSION = '1.4.0';
 use strict;
 use Moo;
 use Dancer2 0.154000;
@@ -213,6 +213,18 @@ sub get_category_name
         return undef;
     }
 }
+sub get_category_id
+{
+    my $self = shift;
+    if($self->row->can('category'))
+    {
+            return $self->row->category->id;
+    }
+    else
+    {
+        return undef;
+    }
+}
 sub max_category_order
 {
     my $self = shift;
@@ -287,6 +299,21 @@ sub get_ext_data
             {
                 $data{$c} = $self->get_attr_multilang($c, $language);
             }
+        }
+    }
+    return %data;
+}
+
+sub get_json_data
+{
+    my $self = shift;
+    my $language = shift;
+    my %data = $self->get_ext_data($language);
+    foreach my $key (keys %data)
+    {
+        if(ref $data{$key} eq 'DateTime')
+        {
+            $data{$key} = $data{$key}->epoch();
         }
     }
     return %data;
@@ -387,9 +414,10 @@ sub next_in_category_by_order
 {
     my $self = shift;
     my $language = shift;
-    my $category = $self->get_schema()->resultset('Category')->find( { category => $self->get_category_name() } );
+    my $category = $self->get_schema()->resultset('Category')->find($self->get_category_id());
     my $category_access = $self->category_accessor($category);
-    my $criteria = { display_order => { '>', $self->get_attr('display_order') }};
+    my $my_order = $self->get_attr('display_order') || 0;
+    my $criteria = { display_order => { '>',  $my_order}};
     if($self->publishable())
     {
         $criteria->{'published'} = 1;
@@ -413,9 +441,10 @@ sub prev_in_category_by_order
 {
     my $self = shift;
     my $language = shift;
-    my $category = $self->get_schema()->resultset('Category')->find( { category => $self->get_category_name() } );
+    my $category = $self->get_schema()->resultset('Category')->find($self->get_category_id());
     my $category_access = $self->category_accessor($category);
-    my $criteria = { display_order => { '<', $self->get_attr('display_order') }};
+    my $my_order = $self->get_attr('display_order') || 0;
+    my $criteria = { display_order => { '<', $my_order }};
     if($self->publishable())
     {
         $criteria->{'published'} = 1;
@@ -438,9 +467,10 @@ sub next_in_category_by_date
 {
     my $self = shift;
     my $language = shift;
-    my $category = $self->get_schema()->resultset('Category')->find( { category => $self->get_category_name() } );
+    my $category = $self->get_schema()->resultset('Category')->find($self->get_category_id());
+    my $my_date = $self->get_attr('publish_date') || DateTime->from_epoch( epoch => 0);
     my $category_access = $self->category_accessor($category);
-    my $criteria = {publish_date => { '>', $self->get_attr('publish_date') }};
+    my $criteria = {publish_date => { '>', $my_date }};
     if($self->publishable())
     {
         $criteria->{'published'} = 1;
@@ -463,9 +493,10 @@ sub prev_in_category_by_date
 {
     my $self = shift;
     my $language = shift;
-    my $category = $self->get_schema()->resultset('Category')->find( { category => $self->get_category_name() } );
+    my $category = $self->get_schema()->resultset('Category')->find($self->get_category_id());
     my $category_access = $self->category_accessor($category);
-    my $criteria = { publish_date => { '<', $self->get_attr('publish_date') }};
+    my $my_date = $self->get_attr('publish_date') || DateTime->from_epoch( epoch => 0);
+    my $criteria = { publish_date => { '<', $my_date }};
     if($self->publishable())
     {
         $criteria->{'published'} = 1;
@@ -709,13 +740,20 @@ sub get_list
     {
         my $img = $self->new($_->id);
         my %el;
-        if(exists $args{'ext'})
+        if(exists $args{'json'})
         {
-            %el = $img->get_ext_data($args{'language'});
+            %el = $img->get_json_data($args{'language'});
         }
         else
         {
-            %el = $img->get_basic_data();
+            if(exists $args{'ext'})
+            {
+                %el = $img->get_ext_data($args{'language'});
+            }
+            else
+            {
+                %el = $img->get_basic_data();
+            }
         }
         push @to_view, \%el;
     }
@@ -866,6 +904,10 @@ sub save_form
             }
             $el_data->{'category'} = $category;
         }
+    }
+    if($self->publishable() && $self->auto_publish() && ! $id)
+    {
+        $el_data->{'published'} = 1;
     }
     if($id)
     {

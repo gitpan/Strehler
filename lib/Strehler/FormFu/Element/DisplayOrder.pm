@@ -1,5 +1,5 @@
 package Strehler::FormFu::Element::DisplayOrder;
-$Strehler::FormFu::Element::DisplayOrder::VERSION = '1.3.3';
+$Strehler::FormFu::Element::DisplayOrder::VERSION = '1.4.0';
 use strict;
 use Moose;
 

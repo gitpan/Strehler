@@ -1,0 +1,9 @@
+---
+article-order: desc
+article-order-by: id
+article-page: 1
+dummy-order: desc
+dummy-order-by: id
+dummy-page: 1
+role: admin
+user: admin
