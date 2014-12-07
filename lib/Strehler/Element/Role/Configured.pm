@@ -1,5 +1,5 @@
 package Strehler::Element::Role::Configured;
-$Strehler::Element::Role::Configured::VERSION = '1.4.1';
+$Strehler::Element::Role::Configured::VERSION = '1.4.2';
 use strict;
 use Moo::Role;
 use Dancer2;
