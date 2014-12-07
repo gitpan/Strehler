@@ -1,5 +1,5 @@
 package Strehler::FormFu::Element::Category;
-$Strehler::FormFu::Element::Category::VERSION = '1.4.0';
+$Strehler::FormFu::Element::Category::VERSION = '1.4.1';
 use strict;
 use Moose;
 

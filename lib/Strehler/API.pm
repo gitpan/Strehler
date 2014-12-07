@@ -1,5 +1,5 @@
 package Strehler::API;
-$Strehler::API::VERSION = '1.4.0';
+$Strehler::API::VERSION = '1.4.1';
 use strict;
 use Dancer2 0.154000;
 use Dancer2::Serializer::JSON;

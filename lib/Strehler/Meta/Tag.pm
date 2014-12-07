@@ -1,5 +1,5 @@
 package Strehler::Meta::Tag;
-$Strehler::Meta::Tag::VERSION = '1.4.0';
+$Strehler::Meta::Tag::VERSION = '1.4.1';
 use strict;
 use Moo;
 use Dancer2 0.154000;

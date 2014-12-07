@@ -1,6 +1,6 @@
 use utf8;
 package Strehler::Schema::Result::Tag;
-$Strehler::Schema::Result::Tag::VERSION = '1.4.0';
+$Strehler::Schema::Result::Tag::VERSION = '1.4.1';
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
