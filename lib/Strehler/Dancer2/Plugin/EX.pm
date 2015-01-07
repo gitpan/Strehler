@@ -1,5 +1,5 @@
 package Strehler::Dancer2::Plugin::EX;
-$Strehler::Dancer2::Plugin::EX::VERSION = '1.4.2';
+$Strehler::Dancer2::Plugin::EX::VERSION = '1.5.0';
 use strict;
 use warnings;
 

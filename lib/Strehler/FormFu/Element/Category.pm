@@ -1,5 +1,5 @@
 package Strehler::FormFu::Element::Category;
-$Strehler::FormFu::Element::Category::VERSION = '1.4.2';
+$Strehler::FormFu::Element::Category::VERSION = '1.5.0';
 use strict;
 use Moose;
 
@@ -61,7 +61,7 @@ Sub-category display attributed is managed by javascript.
 
 =head1 YAML CONFIGURATION
 
-For the complete configuration see in the package: _forms/admin/elements/category.yml_
+For the complete configuration see in the package: forms/admin/elements/category.yml
 
 =cut
 

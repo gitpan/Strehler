@@ -1,5 +1,5 @@
 package Strehler::Element::Role::Configured;
-$Strehler::Element::Role::Configured::VERSION = '1.4.2';
+$Strehler::Element::Role::Configured::VERSION = '1.5.0';
 use strict;
 use Moo::Role;
 use Dancer2;
@@ -37,7 +37,9 @@ sub ORMObj
 sub multilang_children
 {
     my $self = shift;
-    return $self->metaclass_data('multilang_children') || '';
+    #Empty string returned instead of undef to avoid error calling can
+    my $children = $self->metaclass_data('multilang_children') || '';
+    return $children;
 }
 sub get_schema
 {
@@ -49,6 +51,11 @@ sub get_schema
     {
         return schema;
     }
+}
+sub multilang
+{
+    my $self = shift;
+    return 1 if $self->multilang_children() ne '';
 }
 sub _property
 {
@@ -159,11 +166,27 @@ sub custom_list_template
     my $self = shift;
     return $self->_property('custom_list_template', undef);
 }
+sub add_main_column_span
+{
+    my $self = shift;
+    return $self->_property('add_main_column_span', 8);
+}
+sub custom_snippet_add_position
+{
+    my $self = shift;
+    return $self->_property('custom_snippet_position', 'left');
+}
+sub entity_js
+{
+    my $self = shift;
+    return $self->_property('entity_js', undef);
+}
 
 sub entity_data
 {
     my $self = shift;
-    my @attributes = ('auto', 
+    my @attributes = ('multilang',
+                      'auto', 
                       'exposed',
                       'slugged',
                       'label', 
@@ -180,7 +203,10 @@ sub entity_data
                       'multilang_form',
                       'allowed_role',
                       'custom_list_template',
-                      'visible');
+                      'visible',
+                      'add_main_column_span',
+                      'custom_snippet_add_position',
+                      'entity_js');
     my %entity_data;
     foreach my $attr (@attributes)
     {
@@ -271,6 +297,12 @@ return $prop
 
 Generic function to manage flag properties.
 
+=item multilang
+
+return $bool
+
+Considered in entity_data properties, this function says if the element has or has not multilanguage management. Value is deduced by multilang_children attribute.
+
 =item "flag functions"
 
 =over 6
@@ -338,6 +370,18 @@ allowed_role
 =item * 
 
 custom_list_template
+
+=item * 
+
+add_main_column_span
+
+=item * 
+
+custom_snippet_add_position
+
+=item * 
+
+entity_js
 
 =back
 

@@ -1,5 +1,5 @@
 package Strehler::FormFu::Validator::FilenameTooLong;
-$Strehler::FormFu::Validator::FilenameTooLong::VERSION = '1.4.2';
+$Strehler::FormFu::Validator::FilenameTooLong::VERSION = '1.5.0';
 use strict;
 use warnings;
 use Moose;

@@ -1,5 +1,5 @@
 package Strehler::FormFu::Element::Tags;
-$Strehler::FormFu::Element::Tags::VERSION = '1.4.2';
+$Strehler::FormFu::Element::Tags::VERSION = '1.5.0';
 use strict;
 use Moose;
 

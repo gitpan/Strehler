@@ -1,5 +1,5 @@
 package Strehler::FormFu::Element::DisplayOrder;
-$Strehler::FormFu::Element::DisplayOrder::VERSION = '1.4.2';
+$Strehler::FormFu::Element::DisplayOrder::VERSION = '1.5.0';
 use strict;
 use Moose;
 
@@ -49,7 +49,7 @@ No parameters, no labels.
 
 =head1 YAML CONFIGURATION
 
-For the complete configuration see in the package: _forms/admin/elements/display_order.yml_
+For the complete configuration see in the package: forms/admin/elements/display_order.yml
 
 =cut
 

@@ -1,6 +1,0 @@
----
-role: admin
-user: admin
-user-order: desc
-user-order-by: id
-user-page: 1
