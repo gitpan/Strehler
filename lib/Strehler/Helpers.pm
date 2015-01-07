@@ -1,5 +1,5 @@
 package Strehler::Helpers;
-$Strehler::Helpers::VERSION = '1.5.0';
+$Strehler::Helpers::VERSION = '1.5.1';
 use strict;
 use Dancer2 0.154000;
 use Unicode::Normalize;

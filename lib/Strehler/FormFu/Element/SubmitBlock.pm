@@ -1,5 +1,5 @@
 package Strehler::FormFu::Element::SubmitBlock;
-$Strehler::FormFu::Element::SubmitBlock::VERSION = '1.5.0';
+$Strehler::FormFu::Element::SubmitBlock::VERSION = '1.5.1';
 use strict;
 use Moose;
 

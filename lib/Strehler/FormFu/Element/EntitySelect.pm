@@ -1,5 +1,5 @@
 package Strehler::FormFu::Element::EntitySelect;
-$Strehler::FormFu::Element::EntitySelect::VERSION = '1.5.0';
+$Strehler::FormFu::Element::EntitySelect::VERSION = '1.5.1';
 use strict;
 use Moose;
 

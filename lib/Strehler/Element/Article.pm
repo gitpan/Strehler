@@ -1,5 +1,5 @@
 package Strehler::Element::Article;
-$Strehler::Element::Article::VERSION = '1.5.0';
+$Strehler::Element::Article::VERSION = '1.5.1';
 use strict;
 use Cwd 'abs_path';
 use Moo;

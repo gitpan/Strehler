@@ -1,5 +1,5 @@
 package Strehler::Element::Log;
-$Strehler::Element::Log::VERSION = '1.5.0';
+$Strehler::Element::Log::VERSION = '1.5.1';
 use strict;
 use Moo;
 use Dancer2 0.154000;

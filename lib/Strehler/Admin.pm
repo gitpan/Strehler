@@ -1,5 +1,5 @@
 package Strehler::Admin;
-$Strehler::Admin::VERSION = '1.5.0';
+$Strehler::Admin::VERSION = '1.5.1';
 use strict;
 use Cwd 'abs_path';
 use Dancer2 0.154000;

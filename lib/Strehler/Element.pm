@@ -1,5 +1,5 @@
 package Strehler::Element;
-$Strehler::Element::VERSION = '1.5.0';
+$Strehler::Element::VERSION = '1.5.1';
 use strict;
 use Carp 'carp';
 use Moo;

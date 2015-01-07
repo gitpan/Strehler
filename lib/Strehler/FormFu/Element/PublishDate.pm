@@ -1,5 +1,5 @@
 package Strehler::FormFu::Element::PublishDate;
-$Strehler::FormFu::Element::PublishDate::VERSION = '1.5.0';
+$Strehler::FormFu::Element::PublishDate::VERSION = '1.5.1';
 use strict;
 use Moose;
 

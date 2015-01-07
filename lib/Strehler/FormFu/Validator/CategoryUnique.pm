@@ -1,5 +1,5 @@
 package Strehler::FormFu::Validator::CategoryUnique;
-$Strehler::FormFu::Validator::CategoryUnique::VERSION = '1.5.0';
+$Strehler::FormFu::Validator::CategoryUnique::VERSION = '1.5.1';
 use strict;
 use warnings;
 use Moose;

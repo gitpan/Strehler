@@ -1,5 +1,5 @@
 package Strehler::Dancer2::Plugin::Admin;
-$Strehler::Dancer2::Plugin::Admin::VERSION = '1.5.0';
+$Strehler::Dancer2::Plugin::Admin::VERSION = '1.5.1';
 use strict;
 use Dancer2::Plugin;
 use Strehler::Helpers;

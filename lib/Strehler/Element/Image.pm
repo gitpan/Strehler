@@ -1,5 +1,5 @@
 package Strehler::Element::Image;
-$Strehler::Element::Image::VERSION = '1.5.0';
+$Strehler::Element::Image::VERSION = '1.5.1';
 use strict;
 use Cwd 'abs_path';
 use Moo;
@@ -103,7 +103,7 @@ sub save_form
     
     if($img)
     {
-        $public = app->config->{public} || path( app->location, 'public' );
+        $public = app->config->{public} || path( app->config_location, 'public' );
         $ref = '/upload/' . $img->filename;
         $path = $public . $ref;
         $img->copy_to($path);
